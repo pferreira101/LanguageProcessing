@@ -8,6 +8,7 @@
 %x TITLE
 %x TEXT
 %x INFOBOX
+%x PARENTHESES
 %x CATEGORY
 
 %%
@@ -20,10 +21,15 @@
 
 <TITLE>"</title>" {printf("\n"); BEGIN PAGE;}
 
-<TEXT>"{{INFO/"         {printf("Info: "); BEGIN INFOBOX;}
+<TEXT>\{\{Info[//]?         {printf("Info: "); BEGIN INFOBOX;}
+<TEXT>"''"|"'''"       {;}
+<TEXT>"[["          {BEGIN PARENTHESES;}
 <TEXT>"</text>"    {printf("FIM TEXT\n"); BEGIN PAGE;}
 
-<INFOBOX>"}}" {BEGIN PAGE;}
+<INFOBOX>"|" {;}
+<INFOBOX>\}\}\n\n {printf("INICIO TEXT\n"); BEGIN TEXT;} // FIXME: não funciona direito para todos
+
+<PARENTHESES>"]]" {BEGIN TEXT;}
 
 (.|\n)           {;}
 %%
