@@ -21,7 +21,7 @@
 
 <TITLE>"</title>" {printf("\n"); BEGIN PAGE;}
 
-<TEXT>\{\{Info[//]?         {printf("Info: "); BEGIN INFOBOX;}
+<TEXT>\{\{Info[\/]?         {printf("Info: "); BEGIN INFOBOX;}
 <TEXT>"''"|"'''"       {;}
 <TEXT>"[["          {BEGIN PARENTHESES;}
 <TEXT>"</text>"    {printf("FIM TEXT\n"); BEGIN PAGE;}
