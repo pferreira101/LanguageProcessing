@@ -10,28 +10,42 @@
 %x INFOBOX
 %x PARENTHESES
 %x CATEGORY
+%x CURLY
+
+%option stack
 
 %%
-"<page>"          {printf("INICIO PAGE\n"); BEGIN PAGE;}
+"<page>"                        {BEGIN PAGE;}
 
-<PAGE>"<title>"         {printf("Tit: "); BEGIN TITLE;}
-<PAGE>\<text[^>]+\>     {printf("INICIO TEXT\n"); BEGIN TEXT;}
-<PAGE>"</page>"    {printf("FIM PAGE\n"); BEGIN INITIAL;}
+<PAGE>"<title>"                 {printf("Tit: "); BEGIN TITLE;}
+<PAGE>\<text[^>]+\>             {BEGIN TEXT; }
+<PAGE>"</page>"                 {BEGIN INITIAL;}
 <PAGE>.|\n {;}
 
-<TITLE>"</title>" {printf("\n"); BEGIN PAGE;}
+<TITLE>"</title>"               {printf("\n"); BEGIN PAGE;}
 
-<TEXT>\{\{Info[\/]?         {printf("Info: "); BEGIN INFOBOX;}
-<TEXT>"''"|"'''"       {;}
-<TEXT>"[["          {BEGIN PARENTHESES;}
-<TEXT>"</text>"    {printf("FIM TEXT\n"); BEGIN PAGE;}
+<TEXT>"{{Info"[\/]?            {printf("Info: \n"); BEGIN INFOBOX; }
+<TEXT>"''"|"'''"                {;}
+<TEXT>"&quot;"                  {printf("\"");}
+<TEXT>"</text>"                 {BEGIN PAGE;}
+<TEXT>"[[Categoria:"            {BEGIN CATEGORY;} 
+<TEXT>\n(.|\n)*/"[[Categoria:"  {printf("\n\nCategoria: ");} // Para descartar tudo apos primeiro paragrafo. so apanha a segunda categoria idkw
 
-<INFOBOX>"|" {;}
-<INFOBOX>\}\}\n\n {printf("INICIO TEXT\n"); BEGIN TEXT;} // FIXME: não funciona direito para todos
+<CATEGORY>[0-9a-zA-Z ]*         {ECHO;} //  GUARDAR EM GARRAY PARA DEPOIS IMPRIMIR DIREITO;
+<CATEGORY>\|[0-9a-zA-Z ]*       {;}
+<CATEGORY>"]]"                  {printf("\n"); BEGIN TEXT; } 
 
-<PARENTHESES>"]]" {BEGIN TEXT;}
+<INFOBOX>" |"                   {;}
+<INFOBOX>"''"                   {printf("\"");}
+<INFOBOX>\}\}\n\n               {printf("\n"); BEGIN TEXT; } // FIXME: nem todos têm duas novas linhas
 
-(.|\n)           {;}
+<PARENTHESES>[0-9a-zA-Z ]*\|    {;} 
+<PARENTHESES>"]]"               {yy_pop_state(); }
+
+<*>"[["                         {yy_push_state(PARENTHESES); }
+
+(.|\n)                          {;}
+
 %%
 
 
