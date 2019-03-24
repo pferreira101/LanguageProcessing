@@ -70,5 +70,6 @@ int yywrap(){
 int main(){ 
     yylex();
     printf("=================#==================#=================\n"); printPage(p);
+	pageToHTML(p);
     return 0;
 }

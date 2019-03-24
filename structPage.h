@@ -12,5 +12,6 @@ void addInfoLine(Page p, char* infoLine);
 void addCategoria(Page p, char* cat);
 void freePage (Page p);
 void printPage(Page p);
+void pageToHTML(Page p);
 
 #endif
