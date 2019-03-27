@@ -18,23 +18,36 @@ Page initPage(){
 	return p;
 }
 
-void setPageTitle(Page p, char* title){
-	p->titulo = strdup(title);
+void setPageTitle(Page p, gchar* title){
+	p->titulo = g_strdup(title);
 }
 
-void setPageAbstract(Page p, char* abst){
-	p->resumo = strdup(abst);
+void setPageAbstract(Page p, gchar* abst){
+	p->resumo = g_strdup(abst);
 }
 
-void addInfoLine(Page p, char* infoLine){
-	char* newLine = strdup(infoLine);
-	printf("+++++++++++++++a inserir info: %s\n",newLine );
-	g_array_append_val(p->info, newLine);
+
+void addInfoLine(Page p, char* info){
+	gchar* newInfo = g_strdup(info);
+	if(p->info->len>0){
+		int last = p->info->len-1;
+		const gchar * lline = g_array_index(p->info, char*, last);
+		int l_len = strlen(lline);
+
+		if(lline[l_len-1]=='\n')
+			g_array_append_val(p->info, newInfo); // insere novo registo se ja tiver a linha preenchida
+		else{
+			char* catLineInfo = g_strconcat(lline,newInfo,NULL); // adicona resto da informacao à linha que se encontra incompleta
+			g_array_remove_index(p->info, last);
+			g_array_append_val(p->info, catLineInfo);			
+		} 	
+	}
+	else
+		g_array_append_val(p->info, newInfo);	
 }
 
 void addCategoria(Page p, char* cat){
 	char* newCat = strdup(cat);
-	printf("+++++++++++++++a inserir cat: %s\n",newCat );
 	g_array_append_val(p->categorias, newCat);
 }
 
@@ -49,7 +62,7 @@ void freePage(Page p){
 void printPage(Page p){
 	printf("Titulo: %s\n", p->titulo );
 	printf("Resumo: \n\t%s\n", p->resumo );
-	printf("Info:\n");
+	/*printf("Info:\n");
 	for(int i=0; i < p->info->len; i++){
 		char * line = g_array_index (p->info, char*, i);
 		printf("\t%s\n",line);
@@ -59,6 +72,7 @@ void printPage(Page p){
 		char * cat = g_array_index (p->categorias, char*, i);
 		printf("\t%s\n",cat);
 	}
+	*/
 }
 
 

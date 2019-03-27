@@ -12,6 +12,7 @@ test: wiki
 clean:
 	rm lex.yy.c
 	rm wiki
+	rm *.html
 
 
 
