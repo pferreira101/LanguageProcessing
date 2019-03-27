@@ -10,6 +10,7 @@ void setPageTitle(Page p, char* title);
 void setPageAbstract(Page p, char* abst);
 void addInfoLine(Page p, char* infoLine);
 void addCategoria(Page p, char* cat);
+int checkCategoria(Page p, char* cat);
 void freePage (Page p);
 void printPage(Page p);
 void pageToHTML(Page p);

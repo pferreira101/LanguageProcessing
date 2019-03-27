@@ -51,6 +51,12 @@ void addCategoria(Page p, char* cat){
 	g_array_append_val(p->categorias, newCat);
 }
 
+int checkCategoria(Page p, char* cat) {
+	for(int i=0;i<(p->categorias)->len;i++)
+		if(strcmp(cat,g_array_index(p->categorias,char*,i))==0) return 1;
+	return 0;
+}
+
 void freePage(Page p){
 	free(p->titulo);
 	free(p->resumo);
