@@ -13,6 +13,7 @@ void addCategoria(Page p, char* cat);
 int checkCategoria(Page p, char* cat);
 void freePage (Page p);
 void printPage(Page p);
+char* replace_char(char* str, char find, char replace);
 void pageToHTML(Page p);
 
 #endif

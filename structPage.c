@@ -82,6 +82,15 @@ void printPage(Page p){
 }
 
 
+char* replace_char(char* str, char find, char replace){
+    char *current_pos = strchr(str,find);
+    while (current_pos){
+        *current_pos = replace;
+        current_pos = strchr(current_pos,find);
+    }
+    return str;
+}
+
 void pageToHTML(Page p){
 
 	char* filename = strdup(p->titulo); strcat(filename, ".html"); // nao devia alocar espaço para o ".html" ?? funciona assim tho
@@ -123,6 +132,14 @@ void pageToHTML(Page p){
 		fprintf(file, "\t</ul>\n");
 	}
 	
+
+	// Wikipedia Link
+	char* wikipedia = "pt.wikipedia.org/wiki/";
+	char* link = malloc(strlen(wikipedia)+strlen(p->titulo)+1);
+	strcat(link, wikipedia); strcat(link, p->titulo);
+	link = replace_char(link, ' ', '_');
+
+	fprintf(file, "<a href=\"http://%s\">Visitar página Wikipédia</a>", link);
 
 	// HTML STUFF CLOSE
 	fprintf(file, "</body>\n</html>");
