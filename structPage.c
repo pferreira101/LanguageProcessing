@@ -2,7 +2,7 @@
 
 struct page{
 	char* titulo;
-	char* resumo;
+	GString* resumo;
 	char* infoB_catg;
 	GArray* info;
 	GArray* categorias;
@@ -11,7 +11,7 @@ struct page{
 Page initPage(){
 	Page p = malloc(sizeof(struct page));
 	p->titulo = NULL;
-	p->resumo = NULL;
+	p->resumo = g_string_new ("");
 	p->infoB_catg = NULL;
 	p->info = g_array_new(FALSE, FALSE, sizeof(char *));
 	p->categorias = g_array_new(FALSE, FALSE, sizeof(char *));
@@ -26,16 +26,13 @@ void setPageTitle(Page p, gchar* title){
 	p->titulo = g_strdup(title);
 }
 
-void setPageAbstract(Page p, gchar* abst){
-	p->resumo = g_strdup(abst);
-}
+
 
 void addChunkAbstract(Page p, gchar* abst){
-	gchar* newText = g_strdup(abst);
-	if(p->resumo)
-		p->resumo = g_strconcat(p->resumo,newText,NULL);
-	else
-		p->resumo = newText;
+	printf("PAGE:adding text to abs:PAGE\n%s\n",abst);
+	g_string_append(p->resumo, abst);
+	printf("SO FAR________\n%s\n", p->resumo->str);	
+	
 }
 
 
@@ -71,8 +68,8 @@ int checkCategoria(Page p, gchar* cat) {
 
 void freePage(Page p){
 	free(p->titulo);
-	free(p->resumo);
 	free(p->infoB_catg);
+	g_string_free(p->resumo,TRUE);
 	g_array_free(p->info, TRUE);
 	g_array_free(p->categorias, TRUE);
 	free(p);	
@@ -139,7 +136,7 @@ void pageToHTML(Page p){
 
 	// Resumo
 	fprintf(file, "<h3>Resumo</h3>\n<p>");
-	fputs(p->resumo, file);
+	fputs(p->resumo->str, file);
 	fprintf(file, "</p>\n");
 
 	// Categorias	

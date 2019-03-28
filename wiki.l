@@ -17,7 +17,6 @@
 
 %x PAGE TITLE TEXT INFOBOX PARENTHESES CATEGORY CURLY ABSTRACT INFOLINES
 
-quotes ("''"|"'''")
 sepCatg ("|")
 parentOpen ("[["|"{{")
 parentClose ("]]"|"}}")
@@ -72,7 +71,6 @@ parentClose ("]]"|"}}")
 	\ ?\|[^|&\[\n}{]*/[\n&{|\[}]	    {if(yytext[0]==' ') pos=2; else pos=1; addInfoLine(p, yytext+pos);}	
 	[^\[|&}{\n]+/[{\n\[|&}] 			{addInfoLineChunk(p, yytext);} // curls tao aqui por causa de detetar o fim sem ser no inicio de frase, assim nao os apanha
 	"}}"		         				{printf("a sair de infolines\n");BEGIN INFOBOX;}
-	\{\{(.+?)\}\}						{;}
 }	
 
 <ABSTRACT>[^\[\n{&]+/[\[\n{&]		{printf("apanha isto");addChunkAbstract(p, yytext);}
@@ -97,9 +95,9 @@ parentClose ("]]"|"}}")
 									addChunkAbstract(p, yytext);
 								}
 	"}}"						{yy_pop_state();}
+
 }
 
-<TEXT,ABSTRACT>{quotes}         {printf("aqui");}
 
 <INFOLINES,ABSTRACT>{
 	"[["       							{yy_push_state(PARENTHESES); top_state=yy_top_state();}
@@ -121,7 +119,7 @@ int yywrap(){
 }
 
 int main(int argc, char* argv[]){
-	if(argc < 1) {
+	if(argc < 2) {
 		printf("Por favor, insira os argumentos corretos.\n");
 		return -1;
 	} 
@@ -129,6 +127,8 @@ int main(int argc, char* argv[]){
 	if(strcmp("-a", argv[1]) == 0) all_flag = 1;
 	
 	categoria = argv[1];
+	printf("%s\n",categoria);
+
     
 	if(argc == 3) max_pages = atoi(argv[2]);
     yylex();

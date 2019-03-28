@@ -11,7 +11,6 @@ typedef struct page* Page;
 
 Page initPage();
 void setPageTitle(Page p, gchar* title);
-void setPageAbstract(Page p, gchar* abst);
 void setPageInfoBCatg(Page p, gchar* tipo);
 void addInfoLine(Page p, gchar* infoLine);
 void addInfoLineChunk(Page p, gchar* info);
