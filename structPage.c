@@ -1,10 +1,9 @@
 #include "structPage.h"
-#include <string.h>
-#include <glib.h>
-#include <stdio.h>
+
 struct page{
 	char* titulo;
 	char* resumo;
+	char* infoB_catg;
 	GArray* info;
 	GArray* categorias;
 };
@@ -13,9 +12,14 @@ Page initPage(){
 	Page p = malloc(sizeof(struct page));
 	p->titulo = NULL;
 	p->resumo = NULL;
+	p->infoB_catg = NULL;
 	p->info = g_array_new(FALSE, FALSE, sizeof(char *));
 	p->categorias = g_array_new(FALSE, FALSE, sizeof(char *));
 	return p;
+}
+
+void setPageInfoBCatg(Page p, gchar* tipo){
+	p->infoB_catg = g_strdup(tipo);
 }
 
 void setPageTitle(Page p, gchar* title){
@@ -26,32 +30,40 @@ void setPageAbstract(Page p, gchar* abst){
 	p->resumo = g_strdup(abst);
 }
 
+void addChunkAbstract(Page p, gchar* abst){
+	gchar* newText = g_strdup(abst);
+	if(p->resumo)
+		p->resumo = g_strconcat(p->resumo,newText,NULL);
+	else
+		p->resumo = newText;
+}
 
-void addInfoLine(Page p, char* info){
+
+void addInfoLine(Page p, gchar* info){
+	gchar* newInfo = g_strdup(info);
+	g_array_append_val(p->info, newInfo);	
+}
+
+
+void addInfoLineChunk(Page p, gchar* info){
 	gchar* newInfo = g_strdup(info);
 	if(p->info->len>0){
 		int last = p->info->len-1;
 		const gchar * lline = g_array_index(p->info, char*, last);
-		int l_len = strlen(lline);
-
-		if(lline[l_len-1]=='\n')
-			g_array_append_val(p->info, newInfo); // insere novo registo se ja tiver a linha preenchida
-		else{
-			char* catLineInfo = g_strconcat(lline,newInfo,NULL); // adicona resto da informacao à linha que se encontra incompleta
-			g_array_remove_index(p->info, last);
-			g_array_append_val(p->info, catLineInfo);			
-		} 	
+		char* catLineInfo = g_strconcat(lline,newInfo,NULL); // adicona resto da informacao à linha que se encontra incompleta
+		g_array_remove_index(p->info, last);
+		g_array_append_val(p->info, catLineInfo);						
 	}
 	else
 		g_array_append_val(p->info, newInfo);	
 }
 
-void addCategoria(Page p, char* cat){
+void addCategoria(Page p, gchar* cat){
 	char* newCat = strdup(cat);
 	g_array_append_val(p->categorias, newCat);
 }
 
-int checkCategoria(Page p, char* cat) {
+int checkCategoria(Page p, gchar* cat) {
 	for(int i=0;i<(p->categorias)->len;i++)
 		if(strcmp(cat,g_array_index(p->categorias,char*,i))==0) return 1;
 	return 0;
@@ -60,6 +72,7 @@ int checkCategoria(Page p, char* cat) {
 void freePage(Page p){
 	free(p->titulo);
 	free(p->resumo);
+	free(p->infoB_catg);
 	g_array_free(p->info, TRUE);
 	g_array_free(p->categorias, TRUE);
 	free(p);	
@@ -67,18 +80,20 @@ void freePage(Page p){
 
 void printPage(Page p){
 	printf("Titulo: %s\n", p->titulo );
+	printf("Tipo infobox: %s\n",p->infoB_catg );
 	printf("Resumo: \n\t%s\n", p->resumo );
 	/*printf("Info:\n");
 	for(int i=0; i < p->info->len; i++){
 		char * line = g_array_index (p->info, char*, i);
 		printf("\t%s\n",line);
 	}
+	*/
 	printf("Categorias:\n");
 	for(int i=0; i < p->categorias->len; i++){
 		char * cat = g_array_index (p->categorias, char*, i);
 		printf("\t%s\n",cat);
 	}
-	*/
+	
 }
 
 
@@ -112,6 +127,7 @@ void pageToHTML(Page p){
 	// Info
 	if(p->info->len > 0){
 		fprintf(file, "<h3>Info</h3>\n\t<ul>\n");
+		if(p->infoB_catg) fputs(p->infoB_catg, file);
 		for(int i = 0; i<p->info->len; i++){
 			fprintf(file, "\t\t<li>%s%s", g_array_index(p->info, const char*, i), "</li>\n");
 		}
