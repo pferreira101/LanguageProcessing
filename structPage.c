@@ -80,19 +80,21 @@ void freePage(Page p){
 
 void printPage(Page p){
 	printf("Titulo: %s\n", p->titulo );
-	printf("Tipo infobox: %s\n",p->infoB_catg );
-	printf("Resumo: \n\t%s\n", p->resumo );
+	//printf("Tipo infobox: %s\n",p->infoB_catg );
+	//printf("Resumo: \n\t%s\n", p->resumo );
 	/*printf("Info:\n");
 	for(int i=0; i < p->info->len; i++){
 		char * line = g_array_index (p->info, char*, i);
 		printf("\t%s\n",line);
 	}
 	*/
+	/*
 	printf("Categorias:\n");
 	for(int i=0; i < p->categorias->len; i++){
 		char * cat = g_array_index (p->categorias, char*, i);
 		printf("\t%s\n",cat);
 	}
+	*/
 	
 }
 
