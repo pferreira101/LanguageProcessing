@@ -8,6 +8,11 @@
     int top_state;
     int ignore_page;
 
+	char* categoria = "";
+	int max_pages = 2147483647;
+	int processed_pages = 0;
+	int all_flag = 0;
+
 %}
 
 %x PAGE TITLE TEXT INFOBOX PARENTHESES CATEGORY CURLY ABSTRACT INFOLINES
@@ -26,7 +31,17 @@ parentClose ("]]"|"}}")
 	"<title>"                 	{BEGIN TITLE;}
 	\<text[^>]+\>/[A-Z]			{BEGIN ABSTRACT;}
 	\<text[^>]+\>/[^A-Z]        {BEGIN INFOBOX;}
-	"</page>"                 	{BEGIN INITIAL;	if(!ignore_page)pageToHTML(p);  printf("=================#==================#=================\n"); printPage(p); printf("=================#==================#=================\n");}
+	"</page>"                 	{BEGIN INITIAL; 
+									if(processed_pages < max_pages) processed_pages++;
+                                 	else return 0;
+									if(!ignore_page){
+										if(all_flag || checkCategoria(p, categoria)) pageToHTML(p); 
+									}
+									printf("=================#==================#=================\n"); 
+									printPage(p); 
+									freePage(p); 
+									printf("=================#==================#=================\n");
+								}
 	.|\n 					   	{;}
 }
 
@@ -50,7 +65,7 @@ parentClose ("]]"|"}}")
 	"{{"[^iI][^{}]*"}}"\n  										{printf("a eliminar1: %s ###\n",yytext);}//eliminar o que nao interessa
 	"[["[^\[\]]*"]]"\n 											{printf("a eliminar2: %s ###\n",yytext);}//eliminar o que nao interessa
 	"{{"														{yy_push_state(CURLY); top_state=yy_top_state();}
-	[A-Z']								 						{ECHO;unput(yytext[yyleng-1]); printf("a comecar abstract\n"); BEGIN ABSTRACT;} // volta a por carater do resumo no input
+	[A-Z()'']							 						{ECHO; unput(yytext[yyleng-1]); printf("a comecar abstract\n"); BEGIN ABSTRACT;} // volta a por carater do resumo no input
 }
 
 <INFOLINES>{
@@ -105,8 +120,18 @@ int yywrap(){
     return 1;
 }
 
-
-int main(){ 
+int main(int argc, char* argv[]){
+	if(argc < 1) {
+		printf("Por favor, insira os argumentos corretos.\n");
+		return -1;
+	} 
+	
+	if(strcmp("-a", argv[1]) == 0) all_flag = 1;
+	
+	categoria = argv[1];
+    
+	if(argc == 3) max_pages = atoi(argv[2]);
     yylex();
+
     return 0;
 }

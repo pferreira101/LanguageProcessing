@@ -109,17 +109,18 @@ char* replace_char(char* str, char find, char replace){
 }
 
 void pageToHTML(Page p){
-
-	char* filename = strdup(p->titulo); strcat(filename, ".html"); // nao devia alocar espaço para o ".html" ?? funciona assim tho
+	
+	char* filename = malloc(strlen(p->titulo) + 6); 
+	filename = strdup(p->titulo); strcat(filename, ".html");
 
 	FILE* file = fopen(filename, "w");
 
 	// HTML STUFF
-	fprintf(file, "<!DOCTYPE html>\n<html>\n<head>\n\t<meta charset=\"utf-8\">\n\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n\t<title>");
+	fprintf(file, "<!DOCTYPE html>\n<html>\n<head>\n\t<meta charset=\"utf-8\">\n\t<title>");
 	
 	fputs(p->titulo, file);
 
-	fprintf(file, "</title>\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n</head>\n<body>\n");
+	fprintf(file, "</title>\n</head>\n<body>\n");
 
 	// Título
 	fprintf(file, "<h1>");
