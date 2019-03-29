@@ -30,10 +30,11 @@ parentClose ("]]"|"}}")
 	"<title>"                 	{BEGIN TITLE;}
 	\<text[^>]+\>/[A-Z]			{BEGIN ABSTRACT;}
 	\<text[^>]+\>/[^A-Z]        {BEGIN INFOBOX;}
-	"</page>"                 	{BEGIN INITIAL; 
-									if(processed_pages < max_pages) processed_pages++;
-                                 	else return 0;
+	\<text[^>]+\>/"{| class="	{ignore_page = 1;}
+	"</page>"                 	{BEGIN INITIAL; 									
 									if(!ignore_page){
+										if(processed_pages < max_pages) processed_pages++;
+                                 		else return 0;
 										if(all_flag || checkCategoria(p, categoria)) pageToHTML(p); 
 									}
 									printf("=================#==================#=================\n"); 
@@ -59,23 +60,23 @@ parentClose ("]]"|"}}")
 	
 <INFOBOX>{
 	#(?i:redire)												{ignore_page=1; BEGIN PAGE;}
-	"{{"(?i:info)\n												{BEGIN INFOLINES; printf("nao tem tema de infobox\n");}
-	"{{"(?i:info)[ /][^}\n|]+/[\n|}]							{printf("a adicionar cat %s\n", yytext);setPageInfoBCatg(p, yytext+7);BEGIN INFOLINES;}
-	"{{"[^iI][^{}]*"}}"\n  										{printf("a eliminar1: %s ###\n",yytext);}//eliminar o que nao interessa
-	"[["[^\[\]]*"]]"\n 											{printf("a eliminar2: %s ###\n",yytext);}//eliminar o que nao interessa
+	"{{"(?i:info)\n												{BEGIN INFOLINES; /*printf("nao tem tema de infobox\n");*/}
+	"{{"(?i:info)[ /][^}\n|]+/[\n|}]							{/*printf("a adicionar cat %s\n", yytext);*/setPageInfoBCatg(p, yytext+7);BEGIN INFOLINES;}
+	"{{"[^iI][^{}]*"}}"\n  										{/*printf("a eliminar1: %s ###\n",yytext)*/;}//eliminar o que nao interessa
+	"[["[^\[\]]*"]]"\n 											{/*printf("a eliminar2: %s ###\n",yytext)*/;}//eliminar o que nao interessa
 	"{{"														{yy_push_state(CURLY); top_state=yy_top_state();}
-	[A-Z()'']							 						{ECHO; unput(yytext[yyleng-1]); printf("a comecar abstract\n"); BEGIN ABSTRACT;} // volta a por carater do resumo no input
+	[A-Z()'']							 						{ECHO; unput(yytext[yyleng-1]); /*printf("a comecar abstract\n");*/ BEGIN ABSTRACT;} // volta a por carater do resumo no input
 }
 
 <INFOLINES>{
 	\ ?\|[^|&\[\n}{]*/[\n&{|\[}]	    {if(yytext[0]==' ') pos=2; else pos=1; addInfoLine(p, yytext+pos);}	
 	[^\[|&}{\n]+/[{\n\[|&}] 			{addInfoLineChunk(p, yytext);} // curls tao aqui por causa de detetar o fim sem ser no inicio de frase, assim nao os apanha
-	"}}"		         				{printf("a sair de infolines\n");BEGIN INFOBOX;}
+	"}}"		         				{/*printf("a sair de infolines\n");*/BEGIN INFOBOX;}
 }	
 
-<ABSTRACT>[^\[\n{&]+/[\[\n{&]		{printf("apanha isto");addChunkAbstract(p, yytext);}
-<ABSTRACT>(\n\n|\n=)   				{printf("este");BEGIN TEXT;}
-<ABSTRACT>\[						{printf("este2");addChunkAbstract(p,yytext);}//precaver de [...] que aparecem em algumas paginas
+<ABSTRACT>[^\[\n{&]+/[\[\n{&]		{/*printf("apanha isto");*/ addChunkAbstract(p, yytext);}
+<ABSTRACT>(\n\n|\n=)   				{/*printf("este");*/ BEGIN TEXT;}
+<ABSTRACT>\[						{/*printf("este2");*/ addChunkAbstract(p,yytext);}//precaver de [...] que aparecem em algumas paginas
 
 
 <PARENTHESES>{
@@ -89,7 +90,7 @@ parentClose ("]]"|"}}")
 }
 
 <CURLY>{
-	[A-Za-z]*/[}]				{if(top_state==INFOLINES)
+	[A-Za-z]+/[}]				{if(top_state==INFOLINES)
 									addInfoLineChunk(p, yytext);
 								 if(top_state==ABSTRACT)
 									addChunkAbstract(p, yytext);
@@ -101,7 +102,7 @@ parentClose ("]]"|"}}")
 
 <INFOLINES,ABSTRACT>{
 	"[["       							{yy_push_state(PARENTHESES); top_state=yy_top_state();}
-	&lt;ref(.+?)&gt;(.+?)&lt;\/ref&gt; 	{printf("apanhou REF %s\n",yytext);}
+	&lt;ref(.+?)&gt;(.+?)&lt;\/ref&gt; 	{/*printf("apanhou REF %s\n",yytext)*/;}
 	&lt;br&gt;							{;}
 	"{{"								{yy_push_state(CURLY); top_state=yy_top_state();}		
 }
@@ -132,6 +133,8 @@ int main(int argc, char* argv[]){
     
 	if(argc == 3) max_pages = atoi(argv[2]);
     yylex();
+
+	printf("\n\n %d\n --- FIM DE PROCESSAMENTO --- \n", processed_pages);
 
     return 0;
 }
