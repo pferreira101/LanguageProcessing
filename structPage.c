@@ -148,8 +148,13 @@ void pageToHTML(Page p){
 
 			// Info
 			if(p->info->len > 0){
-				fprintf(file, "<h3>Info</h3>\n\t<ul>\n");
-				if(p->infoB_catg) fputs(p->infoB_catg, file);
+				fprintf(file, "<h3>Info</h3>\n\t");
+				if(p->infoB_catg){
+					fprintf(file, "<b>");
+					fputs(p->infoB_catg, file);
+					fprintf(file, "</b>\n");
+				} 
+				fprintf(file, "\t<ul>\n");
 				for(int i = 0; i<p->info->len; i++){
 					fprintf(file, "\t\t<li>%s%s", g_array_index(p->info, const char*, i), "</li>\n");
 				}
