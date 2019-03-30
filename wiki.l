@@ -3,7 +3,7 @@
     #include <string.h>
     #include <glib.h>
     #include "structPage.h"
-
+    #include <time.h>
 
     Page p;
 
@@ -12,7 +12,7 @@
     int ignore_page;
     int in_pretty_mode;
     int num_pelicas;
-    int flag;
+    int debug_mode = 0;
 
 	char* categoria = "";
 	int max_pages = 2147483647;
@@ -24,7 +24,7 @@
 %}
 
 %x PAGE TITLE TEXT INFOBOX PARENTHESES CATEGORY CURLY ABSTRACT INFOLINES SMALLTEXT QUOT DELETEREF
-%x PRETTY PCATCHTXTI PCATCHTXTB PCATCHTXTIB	
+
 
 sepCatg ("|")
 parentOpen ("[["|"{{")
@@ -33,7 +33,7 @@ parentClose ("]]"|"}}")
 %option stack
 
 %%
-"<page>"                        {BEGIN PAGE; flag=0; p=initPage(); ignore_page=0; in_pretty_mode=0;}
+"<page>"                        {BEGIN PAGE; p=initPage(); ignore_page=0; in_pretty_mode=0;}
 
 <PAGE>{
 	"<title>Predefinição"		{ ignore_page = 1;}
@@ -59,7 +59,7 @@ parentClose ("]]"|"}}")
 }
 
 <TITLE>(.+?)/"</title>"         { setPageTitle(p, yytext); 
-								  printf("Página a processar: %s\n", yytext); 
+								  if(debug_mode) printf("%s\n", yytext); 
 								  BEGIN PAGE;
 								}
 
@@ -81,7 +81,7 @@ parentClose ("]]"|"}}")
 	"{{"(?i:info)[ /][^}\n|]+/[\n|}]							{ setPageInfoBCatg(p, yytext+7); BEGIN INFOLINES; top_state = INFOLINES;}
 	"{{"[^iI][^{}]*"}}"\n										{;}
 	"[["(.+?)"]]"\n 											{;}
-	"{{"														{ flag = 1; yy_push_state(CURLY); top_state = INFOBOX;} //elimina restantes casos,nao vai escrever para lado nenhum
+	"{{"														{ yy_push_state(CURLY); top_state = INFOBOX;} //elimina restantes casos,nao vai escrever para lado nenhum
 	"{{PBPE|"[^}]+"}}"											{ 	yytext[yyleng-2]='\0'; 
 																	addChunkAbstract(p,yytext+7); 
 																	top_state = ABSTRACT; 
@@ -124,7 +124,7 @@ parentClose ("]]"|"}}")
 
 <CURLY>{
 	[^{}]+/[{}]				{ addToTopContext(yytext);}
-	"}}"					{ yy_pop_state(); if(flag) flag=0;}
+	"}}"					{ yy_pop_state();}
 	"{{"					{ yy_push_state(CURLY);}
 	(.|\n)					{ addToTopContext(yytext);}
 }
@@ -208,20 +208,30 @@ int yywrap(){
 }
 
 int main(int argc, char* argv[]){
+	clock_t begin = clock();
 	if(argc < 2) {
 		printf("Por favor, insira os argumentos corretos.\n");
 		return -1;
 	} 
 	
-	if(strcmp("-a", argv[1]) == 0) all_flag = 1;
-	
+	if(strcmp("-a", argv[1]) == 0 ) all_flag = 1;
 	categoria = argv[1];
+
+	if(strcmp("-d",argv[2]) == 0) debug_mode=1;
     
-	if(argc == 3) max_pages = atoi(argv[2]);
+	if((argc == 3 && debug_mode==0) || argc == 4) max_pages = atoi(argv[argc-1]);
     yylex();
 
-	printf("\n -----------------------------------------\n");
-	printf(" - Páginas processadas: %d \n --------- FIM DE PROCESSAMENTO ----------\n", processed_pages);
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+    if(!debug_mode){
+		printf("-----------------------------------------\n");
+		printf(" - Páginas processadas: %d\n"
+		   	   " - Tempo gasto: %f segundos\n"
+		   	   "\n_________  FIM DE PROCESSAMENTO _________\n", 
+		  	 	processed_pages, time_spent);
+	}
 
     return 0;
 }
