@@ -30,58 +30,48 @@ Page initPage(){
 
 
 void setPageInfoBCatg(Page p, gchar* tipo){
+	
 	if(p->infoB_catg == NULL) 
 		p->infoB_catg = g_strdup(tipo);
-
-	//free(tipo);
 }
 
 void setPageTitle(Page p, gchar* title){
+	
 	p->titulo = g_strdup(title);
-
-	//free(title);
 }
 
 
 
 void addChunkAbstract(Page p, gchar* abst){
-	//printf("PAGE:adding text to abs:PAGE\n%s\n",abst);
-	g_string_append(p->resumo, abst);
-	//printf("SO FAR________\n%s\n", p->resumo->str);	
-	
+
+	g_string_append(p->resumo, abst);	
 }
 
 
 void addInfoLine(Page p, gchar* info){
 	gchar* newInfo = g_strdup(info);
 	g_array_append_val(p->info, newInfo);	
-
-	//free(info);
 }
 
 
 void addInfoLineChunk(Page p, gchar* info){
-	//gchar* newInfo = g_strdup(info);
+
 	if(p->info->len>0){
 		int last = p->info->len-1;
 		gchar* lline = g_array_index(p->info, char*, last);
 		char* catLineInfo = g_strconcat(lline, info, NULL); // adicona resto da informacao à linha que se encontra incompleta	
 		g_array_remove_index(p->info, last);
-		//g_free(lline);
 		g_array_append_val(p->info, catLineInfo);						
 	}
 	else{
 		gchar* newInfo = g_strdup(info);
 		g_array_append_val(p->info, newInfo);
 	}
-	//free(info);	
 }
 
 void addCategoria(Page p, gchar* cat){
 	char* newCat = g_strdup(cat);
 	g_array_append_val(p->categorias, newCat);
-
-	//free(cat);
 }
 
 int checkCategoria(Page p, gchar* cat) {
@@ -181,10 +171,10 @@ void pageToHTML(Page p){
 			}
 
 			// Wikipedia Link
-			link = g_strconcat(wikipedia, p->titulo, NULL); //strcat(link, p->titulo);
+			link = g_strconcat(wikipedia, p->titulo, NULL); 
 			link = replace_char(link, ' ', '_');
 
-			fprintf(file, "<a href=\"http://%s\">Visitar página Wikipédia</a>", link);
+			fprintf(file, "<a href=\"http://%s\">Visitar página Wikipédia</a>\n", link);
 
 			// HTML STUFF CLOSE
 			fprintf(file, "</body>\n</html>");
