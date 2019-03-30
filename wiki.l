@@ -217,7 +217,7 @@ int main(int argc, char* argv[]){
 	if(strcmp("-a", argv[1]) == 0 ) all_flag = 1;
 	categoria = argv[1];
 
-	if(strcmp("-d",argv[2]) == 0) debug_mode=1;
+	if(argc>2) if(strcmp("-d",argv[2]) == 0) debug_mode=1;
     
 	if((argc == 3 && debug_mode==0) || argc == 4) max_pages = atoi(argv[argc-1]);
     yylex();
