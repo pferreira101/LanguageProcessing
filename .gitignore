@@ -5,3 +5,4 @@ wiki.c
 lex.yy.c
 *.html
 .vscode
+testes/1milionlines.xml
