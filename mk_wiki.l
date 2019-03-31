@@ -78,7 +78,6 @@ parentClose ("]]"|"}}")
 <CATEGORY>{	
 	[^|\]<]+/[\]|<]					{ addCategoria(p, yytext);} // apanhar texto todo até à | ou ]] (algumas catgorias nao tem | terminam logo com ]]!!!!!!!)
 	[\]|]              	    		{ BEGIN TEXT;} // detetar fim de categoria (depois da | nao importa)
-	\<								{ BEGIN TEXT; unput('<');} // se nao fechar os [[]]
 }
 	
 <INFOBOX>{
@@ -100,7 +99,8 @@ parentClose ("]]"|"}}")
 																	BEGIN ABSTRACT;
 																}
     &lt;!--														{ yy_push_state(DELETETAG);} // sem isto estraga paginas como a de 1946
-	[A-Z'=]							 							{ unput(yytext[yyleng-1]); BEGIN ABSTRACT; top_state = ABSTRACT;} // volta a por carater do resumo no input
+	[A-Z'=]									 					{ unput(yytext[yyleng-1]); BEGIN ABSTRACT; top_state = ABSTRACT;} // volta a por carater do resumo no input
+	^\*															{ unput('*'); unput('\n'); BEGIN ABSTRACT; top_state = ABSTRACT;}
 }
 
 <INFOLINES>{
@@ -117,17 +117,18 @@ parentClose ("]]"|"}}")
 <ABSTRACT>{
 	[^<\*=\['\n{&]+							{ addChunkAbstract(p, yytext);}
 	(\n\n|\n=)   							{ BEGIN TEXT;}
+	^\n   									{ BEGIN TEXT;}
 	\[										{ addChunkAbstract(p,yytext);} // precaver de [...] que aparecem em algumas paginas
 	\{										{ addChunkAbstract(p,yytext);}
 	\n 										{ addChunkAbstract(p,"<br>");}
 	"[[Categoria:"							{ BEGIN CATEGORY;} // paginas que começam logo categoria sem duplo \n
-	^\*										{ unput('*'); yy_push_state(BUILDLIST);}
+	\n\*									{ unput('*'); unput('\n'); yy_push_state(BUILDLIST);} // sem unput \n nao reconhece ^\* depois
 	\=										{ addChunkAbstract(p,"=");} // para nao afetar a formatacao
 	\<										{ addChunkAbstract(p,"<");}
 	==(.+?)==/\n 							{ yytext[yyleng-2]='\0';
 								 				 addChunkAbstract(p,"<h4>"); 
 								  				 addChunkAbstract(p,yytext+2);
-								  				 addChunkAbstract(p,"</h4>");
+								  				 addChunkAbstract(p,"</h4>");								  			
 											}							
 }
 
@@ -158,7 +159,7 @@ parentClose ("]]"|"}}")
 												addToTopContext(yytext+8);
 												yy_pop_state(); 
 										}
-	[^<{\['|}]+							{ next=input(); 
+	[^<{\['|}\n]+						{ next=input(); 
 										  if((next!='|' || head_removed==1)&&!ignore_cont_c)
 										  	addToTopContext(yytext);
 										  if(next!='|')unput(next);
@@ -170,7 +171,8 @@ parentClose ("]]"|"}}")
 										  	ignore_cont_c--; //diminui nivel da variavel para depois ser 0 nas chavetas que fecham a primeira abertura 
 										 
 										}
-	\}/\n								{ yy_pop_state();}										 
+	\}/\n								{ yy_pop_state();}
+	./\n\n 								{ yy_pop_state();}										 
 	"{{"								{ head_removed=0; 
 										  if(ignore_cont_c) 
 										  	ignore_cont_c++; //aumenta nivel para ao retomar e terminar meter ignore a 0
@@ -178,7 +180,6 @@ parentClose ("]]"|"}}")
 										} 
 	(.|\n)								{ if(!ignore_cont_c) addToTopContext(yytext);}//adicona | que separam os curls
 }
-
 
 
 
@@ -232,15 +233,17 @@ parentClose ("]]"|"}}")
 
 
 <BUILDLIST>{
-	^\*{1,}							{ if(ident_lvl<yyleng) //iniciar nova lista aninhada
+	^\*+							{ if(ident_lvl<yyleng){ //iniciar nova lista aninhada
 									 	addToTopContext("<ul>");
-									  if(ident_lvl>yyleng) //terminar lista aninhada	
+									 }
+									  if(ident_lvl>yyleng){ //terminar lista aninhada	
 									  	addToTopContext("</ul>");
+									  }
 									  ident_lvl=yyleng;
 									  addToTopContext("<li>");
 									  BEGIN GETLISTLINE;	
 									} 
-	^[^*]							{ addToTopContext("</ul>"); 
+	^[^*]							{ addToTopContext("</ul>"); 								
 									  yy_pop_state(); 
 									  ident_lvl=0; // reset
 									  unput(yytext[0]); //unput para nao estragar nada
@@ -258,8 +261,7 @@ parentClose ("]]"|"}}")
 <DELETEREF>{
 	[^&<\n]+						{ ;}
 	&lt;\/ref&gt;               	{ yy_pop_state();}
-	\</\/text\>						{ ignore_page=1; unput('<'); BEGIN TEXT;}//se isto acontecer, ref nao foi fechado
-	.	 							{ ;}							// entao nao se processa pagina
+	.	 							{ ;}							
 	\n 								{ yy_pop_state();} // para nao ser tao drastico como ignorar logo a pagina  
 }
 
@@ -280,9 +282,9 @@ parentClose ("]]"|"}}")
 									  yy_pop_state();
 									}
 
-<ABSTRACT,CURLY,PARENTHESES,DELETETAG,DELETEREF>{ // serve para tentar maximizar o numero de paginas processadas
-	\</"/page"						{printf("here\n");unput('<'); BEGIN PAGE;}
-	"</text>"						{printf("here\n");BEGIN PAGE;}
+<ABSTRACT,CURLY,PARENTHESES,DELETETAG,DELETEREF,CATEGORY>{ // serve para tentar maximizar o numero de paginas processadas
+	\</"/page"						{unput('<'); BEGIN PAGE;}
+	"</text>"						{BEGIN PAGE;}
 }
 
 <*>(.|\n)                          { ;}

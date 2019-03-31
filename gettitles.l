@@ -3,7 +3,7 @@
     #include <string.h>
     #include "structPage.h"
     Page p;
-    int ignore_page;
+    int ignore_page; 
 
 %}
 
