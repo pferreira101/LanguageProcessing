@@ -10,6 +10,7 @@ typedef struct page* Page;
 
 
 Page initPage();
+char* getTitulo();
 void setPageTitle(Page p, gchar* title);
 void setPageInfoBCatg(Page p, gchar* tipo);
 void addInfoLine(Page p, gchar* infoLine);

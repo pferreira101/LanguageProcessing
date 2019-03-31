@@ -3,14 +3,14 @@ LFLAGS=$(shell pkg-config --libs glib-2.0)
 CC=gcc
 
 .SILENT:wiki
-wiki: wiki.l structPage.c structPage.h
+mk_wiki: wiki.l structPage.c structPage.h
 	flex -o wiki.c wiki.l 
-	$(CC) $(CFLAGS)  -o wiki wiki.c structPage.c $(LFLAGS)
+	$(CC) $(CFLAGS)  -o mk_wiki wiki.c structPage.c $(LFLAGS)
 
 .SILENT:gettitles
-gettitles: gettitles.l
+gettitles: gettitles.l structPage.c structPage.h
 	flex -o gettitles.c gettitles.l
-	$(CC) gettitles.c -o gettitles	
+	$(CC) $(CFLAGS) -o gettitles gettitles.c structPage.c $(LFLAGS)
 
 .SILENT:test
 .PHONY:test
