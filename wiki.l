@@ -22,6 +22,7 @@
 	int max_pages = 2147483647;
 	int processed_pages = 0;
 	int all_flag = 0;
+	int total_categoria = 0;
 	char* link_to;
 	int ident_lvl=0;
 	void addToTopContext(char* txt);
@@ -55,8 +56,12 @@ parentClose ("]]"|"}}")
 											if(debug_mode) printf("%s\n",getTitulo(p));
 											processed_pages++;
 										  }
-										  if(processed_pages > max_pages) return 0;
-										  if(all_flag || checkCategoria(p, categoria)) pageToHTML(p); 
+										  if(processed_pages >= max_pages) return 0;
+										  if(all_flag) pageToHTML(p); 
+										  else if(checkCategoria(p, categoria)){
+											  total_categoria++;
+											  pageToHTML(p);
+										  }
 										  freePage(p); 
 										}		
 	.|\n   	 					   		{;}
@@ -322,10 +327,12 @@ int main(int argc, char* argv[]){
     double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
     if(!debug_mode){
+		if(all_flag == 0) printf(" - Páginas da categoria: %d\n", total_categoria);
 		printf(" - Páginas processadas: %d\n"
 		   	   " - Tempo gasto: %f segundos\n"
-		   	   "\n_________  FIM DE PROCESSAMENTO ___________\n", 
-		  	 	processed_pages, time_spent);
+			   "\n_________  FIM DE PROCESSAMENTO ___________\n",
+				processed_pages, time_spent);
+
 	}
 
     return 0;
