@@ -1,8 +1,18 @@
-BEGIN {RS=";\n+"; FS=";"}
+BEGIN {RS=";\n\n"; FS=";"; OFS=";"}
 
-    #{print NR " -> " $0}
-    NR >= 2 {   if (length($1)==0) { $1="NIL" } 
-                print NR " -> " $0 > "clean.txt"            
+    #NR == 1 {print NR " -> " $0 > "clean.csv" }
+    NR >= 2 {   
+                not_empty = 1
+                if(length($0) <= 33) not_empty = 0                 
+                
+                if(not_empty == 1){
+                    if (length($1)==0) { $1="NIL" }
+                    gsub(/#\n*/, ". ") 
+                    gsub(/\n+/, " ")
+                    gsub(/"/, "")
+                    print NR " -> " $0 > "clean.csv"  
+                }
+                          
             }
 
 END {print NR}
