@@ -7,3 +7,6 @@ lex.yy.c
 .vscode
 testes/1milionlines.xml
 mk_wiki
+TP2/output.txt
+TP2/clean.txt
+TP2/output.csv
