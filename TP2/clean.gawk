@@ -1,6 +1,6 @@
-BEGIN {FS=";"; OFS=";"; RS="\n+";}
+BEGIN {RS="\n"; FS=";"}
 
-NR == 1 {print $0}
-NR >= 2 {if (length($1)==0) $1="NIL"; print $0}
+ {print NR " -> " $0}
+# NR >= 2 {if (length($1)==0) {$1="NIL"} print NR " -> " $0}
 
-END {}
+END {print NR}
