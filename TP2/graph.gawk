@@ -4,10 +4,10 @@ NR>=2 {
 	str=$2;
 	file = $2".gv";
 	split($8,diplomas,"\n"); 
-	print "graph {\n" > file; 
-	for(i in diplomas) {print str + " -- Ref --" + diplomas[i] + ";\n" >> file;}
+	print "graph {\n" + str + " -- REF;\n" + str + " -- Complementar;\n" > file; 
+	for(i in diplomas) {print "REF -- " + diplomas[i] + ";\n" >> file;}
 	split($9,compl," e ");
-	for (i in compl) {print str + " -- Complementar -- " + compl[i] + ";\n" >> file;}
+	for (i in compl) {print "Complementar -- " + compl[i] + ";\n" >> file;}
 	print "}" >> file
 	}
 
