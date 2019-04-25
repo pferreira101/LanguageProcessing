@@ -1,14 +1,25 @@
 BEGIN {RS=";\n+"; FS=";"}
 
-NR>=2 {
-	str=$2;
-	file = $2".gv";
-	split($8,diplomas,"\n"); 
-	print "graph {\n" + str + " -- REF;\n" + str + " -- Complementar;\n" > file; 
-	for(i in diplomas) {print "REF -- " + diplomas[i] + ";\n" >> file;}
-	split($9,compl," e ");
-	for (i in compl) {print "Complementar -- " + compl[i] + ";\n" >> file;}
-	print "}" >> file
+NR>=2 {	 
+		str =  "\042" $2 "\042" # entre aspas
+		file = $2".dot"
+
+		# INICIA FICHEIRO
+		print "graph {\n"  str  " -- \042REF\042;\n"  str  " -- \042Complementar\042;\n" > file
+
+		# DIPLOMAS REF
+		split($8, diplomas, ".");
+		for(i in diplomas)
+			if(diplomas[i] != "") # tentar tirar esta linha
+				print "\042REF\042 -- "  "\042"diplomas[i]"\042;" > file
+
+		# DIPLOMAS COMPLEMENTARES
+		split($9, complementar, "\040e\040")
+		for (i in complementar) 
+			print "\042Complementar\042 -- "  "\042"complementar[i]"\042;" > file
+		
+		# TERMINA FICHEIRO
+		print "}" > file
 	}
 
-END {print "Ações de formação processadas: " + NR}
+END {print "Ações de formação processadas: " NR}

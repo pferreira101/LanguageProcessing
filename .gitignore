@@ -13,3 +13,5 @@ TP2/output.csv
 TP2/tipo_output.txt
 TP2/codigo_output.txt
 TP2/clean.csv
+*.gv
+*.dot

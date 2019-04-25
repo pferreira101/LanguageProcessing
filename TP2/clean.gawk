@@ -7,10 +7,10 @@ BEGIN {RS=";\n\n"; FS=";"; OFS=";"}
                 
                 if(not_empty == 1){
                     if (length($1)==0) { $1="NIL" }
-                    gsub(/#\n*/, ". ") 
+                    gsub(/#\n*/, ".") 
                     gsub(/\n+/, " ")
                     gsub(/"/, "")
-                    print NR " -> " $0 > "clean.csv"  
+                    print $0 > "clean.csv"  
                 }
                           
             }
