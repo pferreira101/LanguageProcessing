@@ -1,9 +1,21 @@
 BEGIN {RS=";\n+"; FS=";"}
 
-    {   if (length($2)!=0) { 
-            print "Código: " $2 "\n\tTítulo: " $3 "\n\tDescrição: " $4 "\n\tNotas: " $5 "\n" > "codigo_output.txt"  
-        } 
-                   
+    {   if (length($2)!=0){ 
+    		print "======>>>> Código: " $2  > "codigo_output.txt" 
+            print "\n\tTítulo: " $3 "\n\n\tDescrição: " $4 "\n" > "codigo_output.txt" 
+
+        	if( length($5)!=0){
+        		split($5, lines1, "#", seps)
+        		print "\tNotas de aplicação:" > "codigo_output.txt" 
+        		for(i in lines1) print "\t\t" lines1[i] > "codigo_output.txt"
+        	}
+        	if( length($7)!=0){
+        		split($7, lines2, "#", seps)           
+    			print "\tNotas de exclusão:" > "codigo_output.txt"
+    			for(i in lines2) print "\t\t" lines2[i] > "codigo_output.txt"
+    			print "\n" > "codigo_output.txt"
+    		}
+    	}
     }
 
 END {print NR}
