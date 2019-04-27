@@ -1,4 +1,4 @@
-BEGIN {RS=";\n+"; FS=";"}
+BEGIN {RS=";\n"; FS=";"}
 
 NR>=2 {	 
 		str =  "\042" $2 "\042" # entre aspas
@@ -22,4 +22,4 @@ NR>=2 {
 		print "}" > file
 	}
 
-END {print "Ações de formação processadas: " NR}
+END {print "Número de grafos criados: " NR}

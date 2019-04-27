@@ -1,6 +1,7 @@
-BEGIN {RS=";\n+"; FS=";"}
+BEGIN {RS=";\n"; FS=";"}
 
     {   if (length($2)!=0){ 
+            n_reg++
     		print "======>>>> Código: " $2  > "codigo_output.txt" 
             print "\n\tTítulo: " $3 "\n\n\tDescrição: " $4 "\n" > "codigo_output.txt" 
 
@@ -18,4 +19,4 @@ BEGIN {RS=";\n+"; FS=";"}
     	}
     }
 
-END {print NR}
+END {print "Número de registos com código numérico : " n_reg }
