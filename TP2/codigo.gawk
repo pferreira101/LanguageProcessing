@@ -1,4 +1,4 @@
-BEGIN {RS=";\n"; FS=";"}
+BEGIN {RS="\n"; FS=";"}
 
     {   if (length($2)!=0){ 
             n_reg++

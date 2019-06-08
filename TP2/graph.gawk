@@ -1,8 +1,8 @@
-BEGIN {RS=";\n"; FS=";"}
+BEGIN {RS="\n"; FS=";"}
 
 NR>=2 {	 
 		str =  "\042" $2 "\042" # entre aspas
-		file = $2".dot"
+		file = $2 ".dot"
 
 		# INICIA FICHEIRO
 		print "graph {\n"  str  " -- \042REF\042;\n"  str  " -- \042Complementar\042;\n" > file
