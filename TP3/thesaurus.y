@@ -9,12 +9,12 @@ int yyerror(char *s);
 %%
 
 Documento : Metadados '\n\n' Conceitos
-		  ;
+	  ;
 
 
 Metadados : Metadado
-		  | Metadados '\n' Metadado
-		  ;
+	  | Metadados '\n' Metadado
+	  ;
 
 Metadado : Diretiva ' ' Parametros
 		 ;
@@ -24,18 +24,18 @@ Diretiva : BASELANG
          ;
 
 Parametros : Parametro
-		   | Parametros ' ' Parametro
-		   ;
+	   | Parametros ' ' Parametro
+	   ;
 
 Paramentro : value
            ;
 
 Conceitos : Conceito
-		  | Conceios '\n' Conceito
-		  ;
+	  | Conceitos '\n' Conceito
+	  ;
 
 Conceito : Nome '\n' Dados
-		 ;
+	 ;
 
 Nome : value
      ;

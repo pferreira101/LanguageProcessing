@@ -1,7 +1,7 @@
 #include "documento.h"
 #include "conceito.h"
 
-struct documento {
+struct Documento {
     GHashTable* conceitos;
 
 };
