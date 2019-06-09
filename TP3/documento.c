@@ -19,6 +19,7 @@ gboolean printConceito(gpointer key_pointer, gpointer conceito_pointer, gpointer
     conceitoToHTML(c);
 
     // fazer free do conceito? ou fazer free de tudo na hash?
+    return TRUE;
 }
 
 void docToHTML(Documento doc){
