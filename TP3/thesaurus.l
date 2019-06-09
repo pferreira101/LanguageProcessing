@@ -2,60 +2,61 @@
 
 %}
 
-%x LANGUAGES BASELANG INV
-%x CONCEITOS CONCEITO
-%x LANG NT BT SN
-%x COMENTARIO
+%option stack
+%x LLANGUAGES LBASELANG LINV
+%x LCONCEITOS LCONCEITO
+%x LLANG LNT LBT LSN
+%x LCOMENTARIO
 
 %%
 
-"#" {yy_push_state(COMENTARIO)}
+"#" {yy_push_state(LCOMENTARIO);}
 
-"%language" {return LANGUAGES; BEGIN LANGUAGES}
-"%baselang" {return BASELANG; BEGIN BASELANG}
-"%inv" {return INV; BEGIN INV}
+"%language" {return LANGUAGES; BEGIN LANGUAGES;}
+"%baselang" {return BASELANG; BEGIN BASELANG;}
+"%inv" {return INV; BEGIN INV;}
 
-"\n\n\n" {BEGIN CONCEITOS;}
+"\n\n\n" {BEGIN LCONCEITOS;}
 
 
-<LANGUAGES,BASELANG,INV>{
+<LLANGUAGES,LBASELANG,LINV>{
 
 [^\s\n]* {yylval.param = strdup(yytext); return PARAM;} // \s = ' ' = whitespace
 
-\n {yy_pop_state()}
+\n {yy_pop_state();}
 
 }
 
 
-<CONCEITOS>{
+<LCONCEITOS>{
 
-"\n\n" {BEGIN CONCEITO}
-
-}
-
-<CONCEITO>{
-
-"\n\n" {BEGIN CONCEITO} // posso fazer isto ou volto pra CONCEITOS?? mas dps ia ter \n\n a dobrar
-
-[^\s\n]* {yylval.nome = strdup(yytext); return NOME}
-
-"NT" {return NT; BEGIN NT}  // narrow term
-"BT" {return BT; BEGIN BT}  // broader term
-"SN" {return SN; BEGIN SN}  // scope note
-[A-Z][A-Z] {yylval.lang = strdup(yytext); return LAN; BEGIN LANG}  // termo na lingua 
+"\n\n" {BEGIN LCONCEITO;}
 
 }
 
-<NT,BT,SN>{
+<LCONCEITO>{
 
-[^\s\n]* {yylval.val = strdup(yytext); return VAL}
-\n {yy_pop_state()}
+"\n\n" {BEGIN LCONCEITO;} // posso fazer isto ou volto pra CONCEITOS?? mas dps ia ter \n\n a dobrar
+
+.+\n {yylval.nome = strdup(yytext); return NOME;}
+
+"NT" {return NT; BEGIN LNT;}  // narrow term
+"BT" {return BT; BEGIN LBT;}  // broader term
+"SN" {return SN; BEGIN LSN;}  // scope note
+[A-Z][A-Z] {yylval.lang = strdup(yytext); return LAN; BEGIN LLANG;}  // termo na lingua 
 
 }
 
-<COMENTARIO>{
+<LNT,LBT,LSN>{
 
-"\n" {yy_pop_state()}
+[^\s\n]* {yylval.val = strdup(yytext); return VAL;}
+\n {yy_pop_state();}
+
+}
+
+<LCOMENTARIO>{
+
+"\n" {yy_pop_state();}
 
 }
 

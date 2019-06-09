@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+int yylex();
 int yyerror(char *s);
 %}
 
@@ -12,41 +13,39 @@ int yyerror(char *s);
 %token BASELANG LANGUAGES INV NT BT SN
 %token <param>PARAM
 %token <nome>NOME
-%token lang>LAN
+%token <lang>LAN
 %token <val>VAL
-
 
 %%
 
-Documento : Metadados '\n\n' Conceitos
-	  ;
-
+Documento : Metadados "\n\n" Conceitos
+	  	  ;
 
 Metadados : Metadado
-	  | Metadados '\n' Metadado
-	  ;
+	  	  | Metadados '\n' Metadado
+	      ;
 
 Metadado : Diretiva ' ' Parametros
-	 ;
+	     ;
 
 Diretiva : BASELANG
          | LANGUAGES
-	 | INV
+	 	 | INV
          ;
 
 Parametros : Parametro
-	   | Parametros ' ' Parametro
-	   ;
+	   	   | Parametros ' ' Parametro
+	       ;
 
 Parametro : PARAM
           ;
 
 Conceitos : Conceito
-	  | Conceitos '\n' Conceito
-	  ;
+	      | Conceitos '\n' Conceito
+	      ;
 
 Conceito : NOME '\n' Dados
-	 ;
+	     ;
 
 Dados : Dado
       | Dados '\n' Dado
@@ -63,6 +62,8 @@ Tipo : NT
 
 
 %%
+
+#include "lex.yy.c"
 
 int yyerror(char *s){
 	printf("ERRO: %s \n", s);
