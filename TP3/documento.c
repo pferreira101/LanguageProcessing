@@ -10,53 +10,186 @@ Documento initDocumento(){
     return doc;
 }
 
-
-
-
-gboolean printConceito(gpointer key_pointer, gpointer conceito_pointer, gpointer info){
-    Conceito c = (Conceito)conceito_pointer;
+void freeDocumento(Documento doc){
     
-    conceitoToHTML(c);
+    g_hash_table_destroy(doc->conceitos);
+    
+    free(doc);
+}
 
-    // fazer free do conceito? ou fazer free de tudo na hash?
+gboolean printTraducao(gpointer key_pointer, gpointer value_ptr, gpointer file_ptr){
+    gchar* lang = key_pointer;
+    gchar* traducao = value_ptr;
+    FILE* file = file_ptr;
+
+    fprintf(file, "\t\t<li> %s - %s</li>\n", lang, traducao);
+}
+
+gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer doc_ptr){
+    Conceito c = (Conceito)conceito_ptr;
+    Documento doc = (Documento)doc_ptr;
+    
+    char* html = ".html";
+	gchar* filename = NULL;
+
+	if(c->nome != NULL) {
+		filename = g_strconcat(c->nome, html, NULL);
+
+		FILE* file = fopen(filename, "w");	
+	
+		if(file){
+			
+			// HTML STUFF
+			fprintf(file, "<!DOCTYPE html>\n<html>\n<head>\n\t<meta charset=\"utf-8\">\n\t<title>");
+
+			fputs(c->nome, file);
+
+			fprintf(file, "</title>\n</head>\n<body>\n");
+
+			// Título
+			fprintf(file, "<h1>");
+			fputs(c->nome, file);
+			fprintf(file, "</h1>\n");
+
+            // Linguagem
+            fprintf(file, "<h3>Linguagem: ");
+			fputs(c->linguagem, file);
+			fprintf(file, "</h3>\n");
+
+			// Narrows
+			if(c->narrows->len > 0){
+				fprintf(file, "<h3>Narrows</h3>\n");
+				fprintf(file, "\t<ul>\n");
+				for(int i = 0; i < c->narrows->len; i++){
+                    gchar* nome = g_array_index(c->narrows, gchar*, i);
+                    if(g_hash_table_contains(doc->conceitos, nome)){
+					    fprintf(file, "\t\t<li><a href=\"%s.html\">%s</a> </li>\n", nome, nome);
+                    }
+                    else{
+                        fprintf(file, "\t\t<li>%s</li>\n", nome);   
+                    }
+				}
+				fprintf(file, "\t</ul>\n");
+			}
+
+            // Broaders
+			if(c->broaders->len > 0){
+				fprintf(file, "<h3>Broaders</h3>\n");
+				fprintf(file, "\t<ul>\n");
+				for(int i = 0; i < c->broaders->len; i++){
+                    gchar* nome = g_array_index(c->broaders, gchar*, i);
+                    if(g_hash_table_contains(doc->conceitos, nome)){
+					    fprintf(file, "\t\t<li><a href=\"%s.html\">%s</a> </li>\n", nome, nome);
+                    }
+                    else{
+                        fprintf(file, "\t\t<li>%s</li>\n", nome);   
+                    }
+				}
+				fprintf(file, "\t</ul>\n");
+			}
+
+            // Scope
+            if(c->scope != NULL){
+                fprintf(file, "<h4>Scope: </h4> ");
+                fputs(c->scope, file);
+                fprintf(file, "\n");
+            }
+
+            if(g_hash_table_size(c->traducoes) > 0){
+                fprintf(file, "<h4> Traduções </h4>\n\t <ul>\n");
+                g_hash_table_foreach(c->traducoes, (GHFunc) printTraducao, file);
+                fprintf(file, "\t</ul>");
+            }
+
+			// HTML STUFF CLOSE
+			fprintf(file, "</body>\n</html>");
+
+			fclose(file);
+		}	
+	}
+
+	g_free(filename);
+
     return TRUE;
 }
 
+
 void docToHTML(Documento doc){
-    g_hash_table_foreach(doc->conceitos, (GHFunc)printConceito, NULL);
+    g_hash_table_foreach(doc->conceitos, (GHFunc)printConceito, doc);
+}
+
+
+gboolean printTraducaoGraph(gpointer key_pointer, gpointer value_ptr, gpointer file_ptr){
+    gchar* lang = key_pointer;
+    gchar* traducao = value_ptr;
+    FILE* file = file_ptr;
+
+    fprintf(file, "\"Traduções\" -- \" %s - %s\";", lang, traducao);
+}
+
+
+gboolean printConceitoGraph(gpointer key_pointer, gpointer conceito_ptr, gpointer ptr){
+    Conceito c = (Conceito)conceito_ptr;
+    
+    char* dot = ".dot";
+	gchar* filename = NULL;
+
+	if(c->nome != NULL) {
+		filename = g_strconcat(c->nome, dot, NULL);
+
+		FILE* file = fopen(filename, "w");	
+	
+		if(file){
+			
+			// INIT
+			fprintf(file, "graph { rankdir=\"LR\"; \n");
+
+
+            // Traduções
+            if(g_hash_table_size(c->traducoes) > 0){
+                fprintf(file, "\t\"%s\" -- \"Traduções\";\n", c->nome);
+                
+                g_hash_table_foreach(c->traducoes, (GHFunc) printTraducaoGraph, file);
+            }
+
+            // NOME --> NT --> termos
+			if(c->narrows->len > 0) {
+                fprintf(file, "\t\"%s\" -- \"Narrow Terms\";\n", c->nome);
+
+                for(int i = 0; i < c->narrows->len; i++){
+                    gchar* nome = g_array_index(c->narrows, gchar*, i);
+                    
+                    fprintf(file, "\t\"Narrow Terms\" -- \"%s\";\n", nome);
+                }
+            }
+
+            // NOME --> BT --> termos
+			if(c->broaders->len > 0) {
+                fprintf(file, "\t\"%s\" -- \"Broader Terms\";\n", c->nome);
+
+                for(int i = 0; i < c->broaders->len; i++){
+                    gchar* nome = g_array_index(c->broaders, gchar*, i);
+                    
+                    fprintf(file, "\t\"Broader Terms\" -- \"%s\";\n", nome);
+                }
+            }
+
+			// CLOSE
+			fprintf(file, "}");
+
+			fclose(file);
+		}	
+	}
+
+	g_free(filename);
+}
+
+void docToDOT(Documento doc){
+    g_hash_table_foreach(doc->conceitos, (GHFunc)printConceitoGraph, NULL);
 }
 
 
 void addConceito(Documento doc, Conceito c){
-    g_hash_table_insert(doc->conceitos, c->nome, c);
-
-    // Narrows: adiciona c como broader / cria e adiciona
-    for(int i = 0; i < c->narrows->len; i++){
-        gchar* nome = g_array_index(c->narrows, gchar*, i);
-        if(g_hash_table_contains(doc->conceitos, nome)){
-            Conceito narrow = g_hash_table_lookup(doc->conceitos, nome);
-            addBroader(narrow, c->nome);
-        }
-        else{
-            Conceito novo = initConceito();
-            setNome(novo, nome);
-            addBroader(novo, c->nome);
-            g_hash_table_insert(doc->conceitos, novo->nome, novo);
-        }
-    }
-
-    // Broaders: adiciona c como narrow / cria e adiciona
-    for(int i = 0; i < c->broaders->len; i++){
-        gchar* nome = g_array_index(c->broaders, gchar*, i);
-        if(g_hash_table_contains(doc->conceitos, nome)){
-            Conceito broader = g_hash_table_lookup(doc->conceitos, nome);
-            addNarrow(broader, c->nome);
-        }
-        else{
-            Conceito novo = initConceito();
-            setNome(novo, nome);
-            addNarrow(novo, c->nome);
-            g_hash_table_insert(doc->conceitos, novo->nome, novo);
-        }
-    }
+    
+    g_hash_table_insert(doc->conceitos, c->nome, c);     
 }
