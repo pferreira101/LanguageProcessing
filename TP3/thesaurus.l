@@ -40,6 +40,7 @@
 
 .+\n {yylval.nome = strdup(yytext); return NOME;}
 
+<<<<<<< HEAD
 "NT" {return NT; BEGIN LNT;}  // narrow term
 "BT" {return BT; BEGIN LBT;}  // broader term
 "SN" {return SN; BEGIN LSN;}  // scope note
