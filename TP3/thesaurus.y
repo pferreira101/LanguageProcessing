@@ -1,54 +1,70 @@
 %{
 #include <stdio.h>
+int yylex();
 int yyerror(char *s);
 %}
 
-%union (char* str)
-%token BASELANG ACCEPTLANGS <str>value
+%union{
+	char* param;
+	char* nome;
+	char* lang;
+	char* val;
+}
+%token BASELANG LANGUAGES INV NT BT SN
+%token <param>PARAM
+%token <nome>NOME
+%token <lang>LAN
+%token <val>VAL
 
 %%
 
-Documento : Metadados '\n\n' Conceitos
-	  ;
-
+Documento : Metadados "\n\n" Conceitos
+	  	  ;
 
 Metadados : Metadado
-	  | Metadados '\n' Metadado
-	  ;
+	  	  | Metadados '\n' Metadado
+	      ;
 
 Metadado : Diretiva ' ' Parametros
-		 ;
+	     ;
 
 Diretiva : BASELANG
-         | ACCEPTLANGS
+         | LANGUAGES
+	 	 | INV
          ;
 
 Parametros : Parametro
-	   | Parametros ' ' Parametro
-	   ;
+	   	   | Parametros ' ' Parametro
+	       ;
 
-Paramentro : value
-           ;
+Parametro : PARAM
+          ;
 
 Conceitos : Conceito
-	  | Conceitos '\n' Conceito
-	  ;
+	      | Conceitos '\n' Conceito
+	      ;
 
-Conceito : Nome '\n' Dados
-	 ;
-
-Nome : value
-     ;
+Conceito : NOME '\n' Dados
+	     ;
 
 Dados : Dado
       | Dados '\n' Dado
       ;
 
-Dado : value 
+Dado : Tipo ' ' VAL
+     ;
+
+Tipo : NT
+     | BT
+     | SN
+     | LAN
      ;
 
 
 %%
+#include "lex.yy.c"
+
+#include "lex.yy.c"
 
 int yyerror(char *s){
 	printf("ERRO: %s \n", s);

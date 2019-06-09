@@ -109,6 +109,8 @@ gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer doc
 	}
 
 	g_free(filename);
+
+    return TRUE;
 }
 
 
