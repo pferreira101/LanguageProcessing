@@ -63,6 +63,7 @@ Tipo : NT
 
 
 %%
+#include "lex.yy.c"
 
 int yyerror(char *s){
 	printf("ERRO: %s \n", s);

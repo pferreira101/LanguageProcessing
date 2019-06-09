@@ -42,13 +42,13 @@
 "NT" {return NT; BEGIN NT}  // narrow term
 "BT" {return BT; BEGIN BT}  // broader term
 "SN" {return SN; BEGIN SN}  // scope note
-[A-Z][A-Z] {yylval.lang = strdup(yytext); return LAN; BEGIN LANG}  // termo na lingua 
+[A-Z][A-Z] {yylval.lang = strdup(yytext); return LAN; BEGIN LANG}  // language translation 
 
 }
 
-<NT,BT,SN>{
+<NT,BT,SN,LANG>{
 
-[^\s\n]* {yylval.val = strdup(yytext); return VAL}
+[^\s\n]* {yylval.val = strdup(yytext); return VAL} // valor 
 \n {yy_pop_state()}
 
 }
