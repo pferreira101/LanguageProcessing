@@ -4,4 +4,4 @@ CC=gcc
 
 .SILENT:teste
 teste: conceito.c conceito.h documento.c documento.h main.c
-	$(CC) $(CFLAGS)  -o teste conceito.c main.c $(LFLAGS)
+	$(CC) $(CFLAGS) -g -o teste conceito.c documento.c main.c $(LFLAGS)

@@ -16,19 +16,20 @@ struct conceito {
     GArray* narrows;
     GArray* broaders;
     gchar* scope;
+    GHashTable* traducoes;
 };
 
 
 
 Conceito initConceito();
-void freeConceito(void* str);
+void freeConceito(Conceito c);
 void addNarrow(Conceito c, gchar* narrow);
 void addBroader(Conceito c, gchar* broader);
+void addTraducao(Conceito c, gchar* lang, gchar* traducao);
 void setNome(Conceito c, gchar* nome);
 void setLinguagem(Conceito c, gchar* ling);
 void setLinguagem(Conceito c, gchar* ling);
 void setScope(Conceito c, gchar* scope);
-void conceitoToHTML(Conceito c);
 
 
 #endif
