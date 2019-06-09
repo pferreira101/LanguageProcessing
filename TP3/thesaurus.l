@@ -2,7 +2,7 @@
 
 %}
 
-%x LANGUAGE BASELANG INV
+%x LANGUAGES BASELANG INV
 %x CONCEITOS CONCEITO
 %x LANG NT BT SN
 %x COMENTARIO
@@ -11,16 +11,17 @@
 
 "#" {yy_push_state(COMENTARIO)}
 
-"%language" {BEGIN LANGUAGE}
-"%baselang" {BEGIN BASELANG}
-"%inv" {BEGIN INV}
+"%language" {return LANGUAGES; BEGIN LANGUAGES}
+"%baselang" {return BASELANG; BEGIN BASELANG}
+"%inv" {return INV; BEGIN INV}
 
-"\n\n\n" {BEGIN CONCEITOS}
+"\n\n\n" {BEGIN CONCEITOS;}
 
 
-<LANGUAGE,BASELANG,INV>{
+<LANGUAGES,BASELANG,INV>{
 
-.*/\n {return yytext} // separar aqui as linguas ou passar logo todas?
+[^\s\n]* {yylval.param = strdup(yytext); return PARAM;} // \s = ' ' = whitespace
+
 \n {yy_pop_state()}
 
 }
@@ -36,18 +37,18 @@
 
 "\n\n" {BEGIN CONCEITO} // posso fazer isto ou volto pra CONCEITOS?? mas dps ia ter \n\n a dobrar
 
-.*/\n {return value;} // passar yytext? termo na baselang
+[^\s\n]* {yylval.nome = strdup(yytext); return NOME}
 
-"NT" {BEGIN NT}  // narrow term
-"BT" {BEGIN BT}  // broader term
-"SN" {BEGIN SN}  // scope note
-[A-Z][A-Z] {BEGIN LANG}  // termo na lingua 
+"NT" {return NT; BEGIN NT}  // narrow term
+"BT" {return BT; BEGIN BT}  // broader term
+"SN" {return SN; BEGIN SN}  // scope note
+[A-Z][A-Z] {yylval.lang = strdup(yytext); return LAN; BEGIN LANG}  // termo na lingua 
 
 }
 
 <NT,BT,SN>{
 
-.*/\n {return yytext} // separar aqui as linguas ou passar logo todas?
+[^\s\n]* {yylval.val = strdup(yytext); return VAL}
 \n {yy_pop_state()}
 
 }

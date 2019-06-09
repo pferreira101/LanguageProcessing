@@ -3,8 +3,18 @@
 int yyerror(char *s);
 %}
 
-%union (char* str)
-%token BASELANG ACCEPTLANGS <str>value
+%union{
+	char* param;
+	char* nome;
+	char* lang;
+	char* val;
+}
+%token BASELANG LANGUAGES INV NT BT SN
+%token <param>PARAM
+%token <nome>NOME
+%token lang>LAN
+%token <val>VAL
+
 
 %%
 
@@ -17,34 +27,38 @@ Metadados : Metadado
 	  ;
 
 Metadado : Diretiva ' ' Parametros
-		 ;
+	 ;
 
 Diretiva : BASELANG
-         | ACCEPTLANGS
+         | LANGUAGES
+	 | INV
          ;
 
 Parametros : Parametro
 	   | Parametros ' ' Parametro
 	   ;
 
-Paramentro : value
-           ;
+Parametro : PARAM
+          ;
 
 Conceitos : Conceito
 	  | Conceitos '\n' Conceito
 	  ;
 
-Conceito : Nome '\n' Dados
+Conceito : NOME '\n' Dados
 	 ;
-
-Nome : value
-     ;
 
 Dados : Dado
       | Dados '\n' Dado
       ;
 
-Dado : value 
+Dado : Tipo ' ' VAL
+     ;
+
+Tipo : NT
+     | BT
+     | SN
+     | LAN
      ;
 
 
