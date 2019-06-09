@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 int yylex();
-int yyerror(char *s);
+void yyerror(char *s);
 %}
 
 %union{
@@ -10,69 +10,63 @@ int yyerror(char *s);
 	char* lang;
 	char* val;
 }
-%token BASELANG LANGUAGES INV NT BT SN
+%token BASELANG LANGUAGES INV NT BT SN 
 %token <param>PARAM
 %token <nome>NOME
-%token <lang>LAN
+%token <lang>LANG
 %token <val>VAL
+%type <param> Parametros 
+%type <val>Valores
 
 %%
 
-Documento : Metadados "\n\n" Conceitos
+Documento : Metadados '\n''\n' Conceitos
 	  	  ;
 
 Metadados : Metadado
 	  	  | Metadados '\n' Metadado
 	      ;
 
-Metadado : Diretiva ' ' Parametros
+Metadado : BASELANG PARAM 	    			{printf("YACC - Reconheceu baselang: %s\n",$2);}
+	     | LANGUAGES Parametros	    		{printf("Languages são: %s\n",$2);}
+	     | INV PARAM PARAM 	        		{printf("YACC - reconheceu inversa: %s inversa de %s\n",$2,$3);}
 	     ;
 
-Diretiva : BASELANG
-         | LANGUAGES
-	 	 | INV
-         ;
-
-Parametros : Parametro
-	   	   | Parametros ' ' Parametro
+Parametros : PARAM 						
+	   	   | Parametros PARAM   		
 	       ;
-
-Parametro : PARAM
-          ;
 
 Conceitos : Conceito
 	      | Conceitos '\n' Conceito
 	      ;
 
-Conceito : NOME '\n' Dados
+Conceito : NOME '\n' Dados                  		{printf("YACC - reconheceu conceito: %s\n", $1);}
 	     ;
 
-Dados : Dado
-      | Dados '\n' Dado
+Dados : Dado '\n'
+      | Dado '\n' Dados
       ;
 
-Dado : Tipo ' ' VAL
-     ;
+Dado : NT Valores 	              					{printf("reconheceu NT %s\n",$2);}    						
+     | BT Valores 									{printf("reconheceu BT %s\n",$2);}
+     | SN VAL  										{printf("reconheceu SN %s\n",$2);}
+     | LANG VAL   									{printf("reconheceu traducao %s\n",$2);}
 
-Tipo : NT
-     | BT
-     | SN
-     | LAN
-     ;
+Valores : VAL 
+        | VAL ',' Valores							{printf("VALORES: reconheceu %s  e %s\n",$1,$3);}
+        ;
 
 
 %%
 #include "lex.yy.c"
 
-#include "lex.yy.c"
-
-int yyerror(char *s){
-	printf("ERRO: %s \n", s);
-	return 0;
-}
+void yyerror(char *s){
+   fprintf(stderr,"%d: %s (%s)\n",yylineno,s,yytext);
+} 
 
 int main(int argc, char const *argv[])
 {
+	printf("A iniciar processamento\n");
 	yyparse();
 	return 0;
 }
