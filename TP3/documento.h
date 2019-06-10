@@ -12,11 +12,9 @@ typedef struct documento* Documento;
 struct documento {
     gchar* baselang;
     GArray* languages;
-    GArray* inv;
+    GArray* relacoes;
     GHashTable* conceitos;
-
 };
-
 
 Documento initDocumento();
 void freeDocumento(Documento doc);
@@ -27,7 +25,7 @@ void docToDOT(Documento doc);
 void addConceito(Documento doc, Conceito c);
 void setBaselang(Documento doc, gchar* bl);
 void addLanguage(Documento doc, gchar* lang);
-void addInv(Documento doc, gchar* ref);
+void addRelacao(Documento doc, gchar* ref);
 
 
 #endif

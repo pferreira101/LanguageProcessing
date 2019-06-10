@@ -2,16 +2,17 @@
 
 
 
+
 Documento initDocumento(){
     Documento doc = malloc(sizeof(struct documento));
 
     doc->conceitos = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify)freeConceito);
 	doc->baselang = NULL;
     doc->languages = g_array_new(FALSE, FALSE, sizeof(gchar*));
-    doc->inv = g_array_new(FALSE, FALSE, sizeof(gchar*));
+    doc->relacoes = g_array_new(FALSE, FALSE, sizeof(gchar*));
 
 	g_array_set_clear_func(doc->languages, freeStr);
-	g_array_set_clear_func(doc->inv, freeStr);
+	g_array_set_clear_func(doc->relacoes, freeStr);
 
     return doc;
 }
@@ -22,7 +23,7 @@ void freeDocumento(Documento doc){
     g_hash_table_destroy(doc->conceitos);
 	g_free(doc->baselang);	
 	g_array_free(doc->languages, TRUE);
-	g_array_free(doc->inv, TRUE);
+	g_array_free(doc->relacoes, TRUE);
     
     free(doc);
 }
@@ -95,6 +96,22 @@ gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer tok
 				}
 				fprintf(file, "\t</ul>\n");
 			}
+
+            // Related Concepts
+            if(c->relatedConcepts->len > 0){
+                fprintf(file, "<h3>Related Concepts</h3>\n");
+                fprintf(file, "\t<ul>\n");
+                for(int i = 0; i < c->relatedConcepts->len; i++){
+                    gchar* nome = g_array_index(c->relatedConcepts, gchar*, i);
+                    if(g_hash_table_contains(doc->conceitos, nome)){
+                        fprintf(file, "\t\t<li><a href=\"%s.html\">%s</a> </li>\n", nome, nome);
+                    }
+                    else{
+                        fprintf(file, "\t\t<li>%s</li>\n", nome);   
+                    }
+                }
+                fprintf(file, "\t</ul>\n");
+            }
 
             // Scope
             if(c->scope != NULL){
@@ -226,9 +243,9 @@ void addLanguage(Documento doc, gchar* lang){
     g_array_append_val(doc->languages, _lang);
 }
 
-void addInv(Documento doc, gchar* ref){
+void addRelacao(Documento doc, gchar* ref){
     gchar* _ref = g_strdup(ref);
-    g_array_append_val(doc->inv, _ref);
+    g_array_append_val(doc->relacoes, _ref);
 }
 
 

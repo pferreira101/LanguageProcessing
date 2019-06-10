@@ -5,7 +5,8 @@
 
 int yylex();
 void yyerror(char *s);
-void checkLanguage(Documento d, char* lang);
+int checkLanguage(Documento d, char* lang);
+int checkRelacoes(Documento d, char* rel);
 
 Documento doc;
 Conceito c;
@@ -18,7 +19,7 @@ Conceito c;
 	char* lang;
 	char* val;
 }
-%token BASELANG LANGUAGES INV NT BT SN 
+%token BASELANG LANGUAGES INV NT NTP NTG BT BTP BTG SN RT
 %token <param>PARAM
 %token <nome>NOME
 %token <lang>LANG
@@ -29,7 +30,7 @@ Conceito c;
 
 %%
 
-Documento : Metadados '\n''\n' Conceitos		{docToHTML(doc);docToDOT(doc);}
+Documento : Metadados '\n''\n' Conceitos		{docToHTML(doc);docToDOT(doc); return 1;}
 	      ;
 
 Metadados : Metadado
@@ -38,7 +39,7 @@ Metadados : Metadado
 
 Metadado : BASELANG PARAM 	    				{printf("YACC - Reconheceu baselang: %s\n",$2); setBaselang(doc,$2);}
 	 	 | LANGUAGES Parametros	    			{printf("YACC -Languages são: %s\n",$2);}
-	 	 | INV PARAM PARAM 	        			{printf("YACC - reconheceu inversa: %s inversa de %s\n",$2,$3); addInv(doc,$2); addInv(doc,$3);}
+	 	 | INV PARAM PARAM 	        			{printf("YACC - reconheceu inversa: %s inversa de %s\n",$2,$3); addRelacao(doc,$2); addRelacao(doc,$3);}
 	 	 ;
 
 Parametros : PARAM 								{ addLanguage(doc,$1);}
@@ -49,27 +50,51 @@ Conceitos : Conceito							{;}
 	  	  | Conceito '\n' Conceitos				{;}
 	  	  ;
 
-Conceito : NOME '\n' Dados              {printf("YACC - reconheceu conceito: %s\n", $1); setNome(c,$1); addConceito(doc, c); c = initConceito();}
+Conceito : NOME '\n' Dados              	{printf("YACC - reconheceu conceito: %s\n", $1); setNome(c,$1); addConceito(doc, c); c = initConceito();}
 	 	 ;						
 
 Dados : Dado '\n'
       | Dado '\n' Dados
       ;
 
-Dado : NT ValoresNT 	              		{printf("YACC - reconheceu NT %s\n",$2);} 	
-     | BT ValoresBT 						{printf("YACC - reconheceu BT %s\n",$2);}
-     | SN VAL  								{printf("YACC - reconheceu SN %s\n",$2); setScope(c,$2);}
-     | LANG VAL   							{checkLanguage(doc,$1); printf("YACC - reconheceu traducao %s\n",$2); addTraducao(c,$1,$2);}
+Dado : NT ValoresNT 	              		{if(!checkRelacoes(doc,"NT")) return 0; }
+	 | NTP ValoresNTP						{if(!checkRelacoes(doc,"NTP")) return 0; }
+	 | NTG ValoresNTG						{if(!checkRelacoes(doc,"NTG")) return 0; }
+     | BT ValoresBT 						{if(!checkRelacoes(doc,"BT")) return 0; }
+     | BTP ValoresBTP						{if(!checkRelacoes(doc,"BTP")) return 0; }
+     | BTG ValoresBTG						{if(!checkRelacoes(doc,"BTG")) return 0; }
+     | RT ValoresRT							{;}
+     | SN VAL  								{printf("YACC - reconheceu SN: %s\n",$2); setScope(c,$2);}
+     | LANG VAL   							{if(!checkLanguage(doc,$1)) return 0; printf("YACC - reconheceu traducao %s\n",$2); addTraducao(c,$1,$2);}
      ;	
 
 ValoresNT : VAL 							{addNarrow(c,$1);}
-          | VAL ',' ValoresNT				{printf("YACC - VALORES: reconheceu %s  e %s\n",$1,$3); addNarrow(c,$1);}
+          | VAL ',' ValoresNT				{addNarrow(c,$1);}
           ;
           
+ValoresNTP : VAL 							{addNarrow(c,$1);}
+           | VAL ',' ValoresNTP				{addNarrow(c,$1);}
+           ;
+
+ValoresNTG : VAL 							{addNarrow(c,$1);}
+           | VAL ',' ValoresNTG				{addNarrow(c,$1);}
+           ;
+
 ValoresBT : VAL 							{addBroader(c,$1);}
-          | VAL ',' ValoresBT				{printf("YACC - VALORES: reconheceu %s  e %s\n",$1,$3); addBroader(c,$1);}
+          | VAL ',' ValoresBT				{addBroader(c,$1);}
           ;
 
+ValoresBTP : VAL 							{addBroader(c,$1);}
+           | VAL ',' ValoresBTP				{addBroader(c,$1);}
+           ;     
+
+ValoresBTG : VAL 							{addBroader(c,$1);}
+           | VAL ',' ValoresBTG				{addBroader(c,$1);}
+           ;                         
+
+ValoresRT : VAL 							{printf("YACC - adicionou RT na 1 clausula: %s\n",$1); addRelated(c,$1);}
+          | VAL ',' ValoresRT				{printf("YACC - adicionou RT na 2 clausula: %s\n",$1); addRelated(c,$1);}
+          ;    
 
 %%
 #include "lex.yy.c"
@@ -78,13 +103,24 @@ void yyerror(char *s){
    fprintf(stderr,"%d: %s (%s)\n",yylineno,s,yytext);
 }
 
-void checkLanguage(Documento d, char* lang){
+int checkLanguage(Documento d, char* lang){
 	for(int i=0;i<(d->languages)->len;i++){
 		if(strcmp(g_array_index(d->languages,char*,i),lang)==0){
-			return ;
+			return 1;
 		}
 	}
 	yyerror("Language not defined");
+	return 0;
+}
+
+int checkRelacoes(Documento d, char* rel){
+	for(int i=0;i<(d->relacoes)->len;i++){
+		if(strcmp(g_array_index(d->relacoes,char*,i),rel)==0){
+			return 1;
+		}
+	}
+	yyerror("Relathionship not defined");
+	return 0;
 }
 
 int main(int argc, char const *argv[])
@@ -93,8 +129,9 @@ int main(int argc, char const *argv[])
 	c = initConceito();
 
 	printf("A iniciar processamento\n");
-	yyparse();
-	printf("Processamento terminado. Estrutura preenchida\n");
+	int ok = yyparse();
+	if(ok) printf("Processamento terminado com sucesso. Estrutura preenchida\n");
+	else printf("Processamento abortado\n");
 
 
 	freeDocumento(doc);

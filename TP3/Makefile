@@ -21,3 +21,4 @@ clean:
 	-rm *.html
 	-rm thesaurus
 	-rm teste
+	-rm *.dot

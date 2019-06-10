@@ -14,6 +14,7 @@ struct conceito {
     gchar* nome;
     GArray* narrows;
     GArray* broaders;
+    GArray* relatedConcepts;
     gchar* scope;
     GHashTable* traducoes;
 };
@@ -25,6 +26,7 @@ void freeStr(void* str);
 void freeConceito(Conceito c);
 void addNarrow(Conceito c, gchar* narrow);
 void addBroader(Conceito c, gchar* broader);
+void addRelated(Conceito c, gchar* related);
 void addTraducao(Conceito c, gchar* lang, gchar* traducao);
 void setNome(Conceito c, gchar* nome);
 void setScope(Conceito c, gchar* scope);
