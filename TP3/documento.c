@@ -10,8 +10,12 @@ Documento initDocumento(){
     doc->languages = g_array_new(FALSE, FALSE, sizeof(gchar*));
     doc->inv = g_array_new(FALSE, FALSE, sizeof(gchar*));
 
+	g_array_set_clear_func(doc->languages, freeStr);
+	g_array_set_clear_func(doc->inv, freeStr);
+
     return doc;
 }
+
 
 void freeDocumento(Documento doc){
     
@@ -32,9 +36,11 @@ gboolean printTraducao(gpointer key_pointer, gpointer value_ptr, gpointer file_p
     return TRUE;
 }
 
-gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer doc_ptr){
+gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer token){
     Conceito c = (Conceito)conceito_ptr;
-    Documento doc = (Documento)doc_ptr;
+    
+    Documento doc = ((Documento*)token)[0];
+
     printf("a imprimir conceito\n");
     char* html = ".html";
 	gchar* filename = NULL;
@@ -112,12 +118,25 @@ gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer doc
 
 	g_free(filename);
 
+    // INDEX
+    FILE* index = ((FILE**)token)[1];
+    fprintf(index, "<li><a href=\"%s.html\">%s</a> </li>\n", c->nome, c->nome);
+
     return TRUE;
 }
 
 
 void docToHTML(Documento doc){
-    g_hash_table_foreach(doc->conceitos, (GHFunc)printConceito, doc);
+
+    FILE* index  = fopen("index.html", "w");	
+    fprintf(index, "<!DOCTYPE html>\n<html>\n<head>\n\t<meta charset=\"utf-8\">\n\t<title>Index</title>\n</head>\n<body>\n<ul>\n<h1>Índice</h1>\n");
+
+    void* token[2] = {doc, index};
+
+    g_hash_table_foreach(doc->conceitos, (GHFunc)printConceito, token);
+
+    fprintf(index, "</ul>\n</body>\n</html>");
+    fclose(index);
 }
 
 
