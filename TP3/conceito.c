@@ -13,11 +13,18 @@ Conceito initConceito(){
     c->scope = NULL;
 	c->traducoes = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)g_free, (GDestroyNotify)g_free);
 
-    g_array_set_clear_func(c->narrows, (GDestroyNotify)g_free);
-	g_array_set_clear_func(c->broaders, (GDestroyNotify)g_free);
+    g_array_set_clear_func(c->narrows, freeStr);
+	g_array_set_clear_func(c->broaders, freeStr);
 
     return c;
 }
+
+
+void freeStr(void* str){
+	char** to_free = (char**)str;
+	g_free(*to_free);
+}
+
 
 void freeConceito(Conceito c){ // mudar
 
@@ -34,16 +41,20 @@ void freeConceito(Conceito c){ // mudar
 
 
 void addNarrow(Conceito c, gchar* narrow){
-    g_array_append_val(c->narrows, narrow);
+    gchar* _narrow = g_strdup(narrow);
+    g_array_append_val(c->narrows, _narrow);
 }
 
 
 void addBroader(Conceito c, gchar* broader){
-    g_array_append_val(c->broaders, broader);
+    gchar* _broader = g_strdup(broader);
+    g_array_append_val(c->broaders, _broader);
 }
 
 void addTraducao(Conceito c, gchar* lang, gchar* traducao){
-	g_hash_table_insert(c->traducoes, lang, traducao);
+    gchar* _lang = g_strdup(lang);
+    gchar* _traducao = g_strdup(traducao);
+	g_hash_table_insert(c->traducoes, _lang, _traducao);
 }
 
 

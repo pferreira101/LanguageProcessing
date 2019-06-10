@@ -5,7 +5,7 @@
 Documento initDocumento(){
     Documento doc = malloc(sizeof(struct documento));
 
-    doc->conceitos = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)free, (GDestroyNotify)freeConceito); // definir freeConceito
+    doc->conceitos = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify)freeConceito);
 
     return doc;
 }

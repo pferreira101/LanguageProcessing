@@ -22,6 +22,7 @@ struct conceito {
 
 
 Conceito initConceito();
+void freeStr(void* str);
 void freeConceito(Conceito c);
 void addNarrow(Conceito c, gchar* narrow);
 void addBroader(Conceito c, gchar* broader);
