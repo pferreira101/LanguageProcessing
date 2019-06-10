@@ -23,12 +23,13 @@ gboolean printTraducao(gpointer key_pointer, gpointer value_ptr, gpointer file_p
     FILE* file = file_ptr;
 
     fprintf(file, "\t\t<li> %s - %s</li>\n", lang, traducao);
+    return TRUE;
 }
 
 gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer doc_ptr){
     Conceito c = (Conceito)conceito_ptr;
     Documento doc = (Documento)doc_ptr;
-    
+    printf("a imprimir conceito\n");
     char* html = ".html";
 	gchar* filename = NULL;
 
@@ -125,6 +126,7 @@ gboolean printTraducaoGraph(gpointer key_pointer, gpointer value_ptr, gpointer f
     FILE* file = file_ptr;
 
     fprintf(file, "\"Traduções\" -- \" %s - %s\";", lang, traducao);
+    return TRUE;
 }
 
 
@@ -182,6 +184,7 @@ gboolean printConceitoGraph(gpointer key_pointer, gpointer conceito_ptr, gpointe
 	}
 
 	g_free(filename);
+    return TRUE;
 }
 
 void docToDOT(Documento doc){
@@ -190,6 +193,6 @@ void docToDOT(Documento doc){
 
 
 void addConceito(Documento doc, Conceito c){
-    
+    printf("DOC: a adicionar conceito: %s\n",c->nome );
     g_hash_table_insert(doc->conceitos, c->nome, c);     
 }

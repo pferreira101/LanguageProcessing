@@ -6,7 +6,7 @@ CC=gcc
 make: thesaurus.l thesaurus.y
 	flex thesaurus.l
 	yacc -d -v thesaurus.y
-	gcc -o thesaurus y.tab.c
+	$(CC) $(CFLAGS)  -o thesaurus y.tab.c documento.c conceito.c $(LFLAGS)
 
 .SILENT:teste
 teste: conceito.c conceito.h documento.c documento.h main.c

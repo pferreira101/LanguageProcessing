@@ -7,7 +7,7 @@
 
 %%
 
-#.+              	{printf("reconheceu comentario\n");}
+#.+              	{printf("flex - reconheceu comentario\n");}
 
 "%language" 		{printf("flex - reconheceu languages\n"); return LANGUAGES;}
 "%baselang" 		{printf("flex - reconheceu baselang\n"); return BASELANG;}
