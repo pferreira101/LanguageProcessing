@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <glib.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <gmodule.h>
 

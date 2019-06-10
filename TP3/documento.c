@@ -37,6 +37,82 @@ gboolean printTraducao(gpointer key_pointer, gpointer value_ptr, gpointer file_p
     return TRUE;
 }
 
+char* limpaEspacos (char* string) {
+    char* s = g_strdup(string);
+    int i, j;
+    for(i=0;s[i];i++){
+        s[i] = tolower(s[i]); 
+        if(s[i]==' '){ 
+            j = i; 
+            while(s[j]!='\0'){ 
+               s[j]=s[j+1];
+               j++;
+            }
+            i--; 
+        }        
+    }
+    return s;
+}
+
+
+void writeClausulaBasica(FILE* file, char* pred, char* valor){
+     fprintf(file, "%s(%s).\n", limpaEspacos(pred), limpaEspacos(valor));
+}
+
+void writeIsPartOf(FILE* file, char* part, char* whole){
+    fprintf(file, "isPartOf(%s,%s).\n", limpaEspacos(part), limpaEspacos(whole));
+}
+
+gboolean createClausulas(gpointer key_pointer, gpointer conceito_ptr, gpointer token){
+    Conceito c = (Conceito)conceito_ptr;
+    
+    FILE* file = (FILE*) token;
+
+    // Narrows
+    for(int i = 0; i < c->nt->len; i++){
+        gchar* narrow = g_array_index(c->nt, gchar*, i);
+        writeClausulaBasica(file, c->nome, narrow);
+    }
+    // Broaders
+    for(int i = 0; i < c->bt->len; i++){
+        gchar* broader = g_array_index(c->bt, gchar*, i);
+        writeClausulaBasica(file, broader, c->nome);
+    }
+    // NTG
+    for(int i = 0; i < c->ntg->len; i++){
+        gchar* narrow = g_array_index(c->ntg, gchar*, i);
+        writeClausulaBasica(file, c->nome, narrow);
+    }
+    // BTG
+    for(int i = 0; i < c->btg->len; i++){
+        gchar* broader = g_array_index(c->btg, gchar*, i);
+        writeClausulaBasica(file, broader, c->nome);
+    }
+    // NTP
+    for(int i = 0; i < c->ntp->len; i++){
+        gchar* narrow = g_array_index(c->ntp, gchar*, i);
+        writeIsPartOf(file, narrow, c->nome);
+    }
+    // BTG
+    for(int i = 0; i < c->btp->len; i++){
+        gchar* broader = g_array_index(c->btp, gchar*, i);
+        writeIsPartOf(file, c->nome, broader);
+    }
+
+
+
+    return TRUE;
+}
+
+void docToProlog(Documento doc){
+    FILE* index  = fopen("output.pl", "w");        
+
+    g_hash_table_foreach(doc->conceitos, (GHFunc)createClausulas, index);
+
+    fclose(index);
+
+}
+
 gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer token){
     Conceito c = (Conceito)conceito_ptr;
     
@@ -411,7 +487,7 @@ gboolean conceptToGraphGeral(gpointer key_pointer, gpointer conceito_ptr, gpoint
            	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"related to\"];\n", c->nome,nome);
         }
     }
-
+    return TRUE;
 }
 
 

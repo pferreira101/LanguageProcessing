@@ -136,6 +136,7 @@ int main(int argc, char const *argv[])
 		docToHTML(doc); printf("HTMLs gerados\n");
 		docToDOT(doc); printf("DOCs gerados\n");
 		docToDOTGeral(doc); printf("DOC Geral gerado\n");
+		docToProlog(doc);
 	}
 	else printf("Processamento abortado\n");
 

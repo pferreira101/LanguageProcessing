@@ -19,6 +19,7 @@ struct documento {
 Documento initDocumento();
 void freeDocumento(Documento doc);
 gboolean printConceito(gpointer key_pointer, gpointer conceito_pointer, gpointer info);
+void docToProlog(Documento doc);
 void docToHTML(Documento doc);
 gboolean printConceitoGraph(gpointer key_pointer, gpointer conceito_ptr, gpointer doc_ptr);
 void docToDOT(Documento doc);
