@@ -10,6 +10,9 @@
 typedef struct documento* Documento;
 
 struct documento {
+    gchar* baselang;
+    GArray* languages;
+    GArray* inv;
     GHashTable* conceitos;
 
 };
@@ -22,6 +25,9 @@ void docToHTML(Documento doc);
 gboolean printConceitoGraph(gpointer key_pointer, gpointer conceito_ptr, gpointer doc_ptr);
 void docToDOT(Documento doc);
 void addConceito(Documento doc, Conceito c);
+void setBaselang(Documento doc, gchar* bl);
+void addLanguage(Documento doc, gchar* lang);
+void addInv(Documento doc, gchar* ref);
 
 
 #endif

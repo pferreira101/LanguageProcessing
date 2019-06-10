@@ -7,7 +7,6 @@ Conceito initConceito(){
     Conceito c = malloc(sizeof(struct conceito));
 
     c->nome = NULL;
-    c->linguagem = NULL;
     c->narrows = g_array_new(FALSE, FALSE, sizeof(gchar*));
     c->broaders = g_array_new(FALSE, FALSE, sizeof(gchar*));
     c->scope = NULL;
@@ -29,7 +28,6 @@ void freeStr(void* str){
 void freeConceito(Conceito c){ // mudar
 
 	g_free(c->nome);
-	g_free(c->linguagem);	
 	g_array_free(c->narrows, TRUE);
 	g_array_free(c->broaders, TRUE);
 	if(c->scope != NULL) g_free(c->scope);
@@ -60,11 +58,6 @@ void addTraducao(Conceito c, gchar* lang, gchar* traducao){
 
 void setNome(Conceito c, gchar* nome){
     c->nome = g_strdup(nome);
-}
-
-
-void setLinguagem(Conceito c, gchar* ling){
-    c->linguagem = g_strdup(ling);
 }
 
 

@@ -6,6 +6,9 @@ Documento initDocumento(){
     Documento doc = malloc(sizeof(struct documento));
 
     doc->conceitos = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify)freeConceito);
+	doc->baselang = NULL;
+    doc->languages = g_array_new(FALSE, FALSE, sizeof(gchar*));
+    doc->inv = g_array_new(FALSE, FALSE, sizeof(gchar*));
 
     return doc;
 }
@@ -13,6 +16,9 @@ Documento initDocumento(){
 void freeDocumento(Documento doc){
     
     g_hash_table_destroy(doc->conceitos);
+	g_free(doc->baselang);	
+	g_array_free(doc->languages, TRUE);
+	g_array_free(doc->inv, TRUE);
     
     free(doc);
 }
@@ -51,11 +57,6 @@ gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer doc
 			fprintf(file, "<h1>");
 			fputs(c->nome, file);
 			fprintf(file, "</h1>\n");
-
-            // Linguagem
-            fprintf(file, "<h3>Linguagem: ");
-			fputs(c->linguagem, file);
-			fprintf(file, "</h3>\n");
 
 			// Narrows
 			if(c->narrows->len > 0){
@@ -196,3 +197,21 @@ void addConceito(Documento doc, Conceito c){
     printf("DOC: a adicionar conceito: %s\n",c->nome );
     g_hash_table_insert(doc->conceitos, c->nome, c);     
 }
+
+void setBaselang(Documento doc, gchar* bl){
+   	doc->baselang = g_strdup(bl);
+}
+
+void addLanguage(Documento doc, gchar* lang){
+    gchar* _lang = g_strdup(lang);
+    g_array_append_val(doc->languages, _lang);
+}
+
+void addInv(Documento doc, gchar* ref){
+    gchar* _ref = g_strdup(ref);
+    g_array_append_val(doc->inv, _ref);
+}
+
+
+
+

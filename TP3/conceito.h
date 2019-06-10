@@ -12,7 +12,6 @@ typedef struct conceito* Conceito;
 
 struct conceito {
     gchar* nome;
-    gchar* linguagem;
     GArray* narrows;
     GArray* broaders;
     gchar* scope;
@@ -28,7 +27,6 @@ void addNarrow(Conceito c, gchar* narrow);
 void addBroader(Conceito c, gchar* broader);
 void addTraducao(Conceito c, gchar* lang, gchar* traducao);
 void setNome(Conceito c, gchar* nome);
-void setLinguagem(Conceito c, gchar* ling);
 void setScope(Conceito c, gchar* scope);
 
 
