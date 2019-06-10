@@ -1,15 +1,22 @@
 %language PT EN 						# linguas: PT EN
 %baselang EN 							# lingua de base: EN
 %inv NT BT 								# NT, BT são relaçõoes inversas a NT B => b BT a
+%inv NTP BTP	
 										# conceitos:
 animal 									# termo na baselang
 PT animal 								# LINGUA termo
 NT cat, dog, cow, fish, ant 			# NT = narrow term = termo específico
 NT camel
 BT Life being 							# BT = broader term = termo genérico
-										# linha em branco : separador de conceitos
+
+tail  									# linha em branco : separador de conceitos
+PT cauda
+BTP cat
+NTP fur	
+RT balance								
+
 cat
 PT gato
 BT animal
 SN animal que tem sete vidas e m(e)ia	# scope note = nota explicativa
-#comentário 							# desde o símbolo ’#’ até ao fim da linha
+#comentario 

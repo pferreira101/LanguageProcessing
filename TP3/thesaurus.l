@@ -8,6 +8,7 @@
 %%
 	
 #.+              								{printf("flex - reconheceu comentario\n");}
+^#(.)*\n										{printf("flex - reconheceu comentario de início\n");}
 
 "%language" 									{printf("flex - reconheceu languages\n"); return LANGUAGES;}
 "%baselang" 									{printf("flex - reconheceu baselang\n"); return BASELANG;}
@@ -19,7 +20,7 @@
 ^"BT" 											{return BT;}
 ^"BTP"											{return BTP;}
 ^"BTG"											{return BTG;}
-^"SN" 											{printf("flex - reconheceu SN"); BEGIN SCOPENOTE; return SN;}
+^"SN" 											{printf("flex - reconheceu SN\n"); BEGIN SCOPENOTE; return SN;}
 ^"RT"											{return RT;}
 ^[A-Z][A-Z] 									{printf("flex - reconheceu traducao: %s\n", yytext); yylval.lang = strdup(yytext); return LANG;} 
 [A-Z][A-Z]([A-Z])?								{printf("flex - a imprimir duas maiusculas: %s\n", yytext); yylval.param = strdup(yytext); return PARAM;}

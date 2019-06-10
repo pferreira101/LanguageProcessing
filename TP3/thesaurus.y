@@ -131,12 +131,14 @@ int main(int argc, char const *argv[])
 
 	printf("A iniciar processamento\n");
 	int ok = yyparse();
-	if(ok) printf("Processamento terminado com sucesso. Estrutura preenchida\n");
+	if(ok){
+		printf("Processamento terminado com sucesso. Estrutura preenchida\n");
+		docToHTML(doc); printf("HTMLs gerados\n");
+		docToDOT(doc); printf("DOCs gerados\n");
+		docToDOTGeral(doc); printf("DOC Geral gerado\n");
+	}
 	else printf("Processamento abortado\n");
 
-	docToHTML(doc); printf("HTMLs gerados\n");
-	docToDOT(doc); printf("DOCs gerados\n");
-	docToDOTGeral(doc); printf("DOC Geral gerado\n");
 
 	freeDocumento(doc);
 	return 0;

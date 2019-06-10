@@ -319,6 +319,17 @@ gboolean printConceitoGraph(gpointer key_pointer, gpointer conceito_ptr, gpointe
                 }
             }
 
+			// NOME --> RT --> termos
+			if(c->relatedConcepts->len > 0) {
+                fprintf(file, "\t\"%s\" -- \"Related Terms\";\n", c->nome);
+
+                for(int i = 0; i < c->relatedConcepts->len; i++){
+                    gchar* nome = g_array_index(c->relatedConcepts, gchar*, i);
+                    
+                    fprintf(file, "\t\"Related Terms\" -- \"%s\";\n", nome);
+                }
+            }
+
 			// CLOSE
 			fprintf(file, "}");
 
@@ -356,20 +367,20 @@ gboolean conceptToGraphGeral(gpointer key_pointer, gpointer conceito_ptr, gpoint
 	if(c->nt->len > 0) {
     	for(int i = 0; i < c->nt->len; i++){
 			gchar* nome = g_array_index(c->nt, gchar*, i);        
-           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"is a\"];\n", nome,c->nome);
+           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"can be\"];\n", c->nome,nome);
         }
     }
 	if(c->ntg->len > 0) {
     	for(int i = 0; i < c->ntg->len; i++){
 			gchar* nome = g_array_index(c->ntg, gchar*, i);        
-           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"is a\"];\n", nome,c->nome);
+           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"can be\"];\n", c->nome,nome);
         }
     }
 	// NTP
 	if(c->ntp->len > 0) {
     	for(int i = 0; i < c->ntp->len; i++){
 			gchar* nome = g_array_index(c->ntp, gchar*, i);        
-           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"is part of\"];\n", nome,c->nome);
+           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"has\"];\n", c->nome,nome);
         }
     }
 	// BT e BTG
