@@ -13,7 +13,7 @@ Conceito initConceito(){
 	c->ntp = g_array_new(FALSE, FALSE, sizeof(gchar*));
     c->btp = g_array_new(FALSE, FALSE, sizeof(gchar*));
     c->relatedConcepts = g_array_new(FALSE, FALSE, sizeof(gchar*));
-    c->scope = NULL;
+    c->scope = g_string_new("");
 	c->traducoes = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)g_free, (GDestroyNotify)g_free);
 
     g_array_set_clear_func(c->nt, freeStr);
@@ -43,7 +43,7 @@ void freeConceito(Conceito c){ // mudar
 	g_array_free(c->ntp, TRUE);
 	g_array_free(c->btp, TRUE);
     g_array_free(c->relatedConcepts, TRUE);
-	if(c->scope != NULL) g_free(c->scope);
+	g_string_free(c->scope,TRUE);
 	g_hash_table_destroy(c->traducoes);
 
 	free(c);
@@ -102,8 +102,8 @@ void setNome(Conceito c, gchar* nome){
 }
 
 
-void setScope(Conceito c, gchar* scope){
-    c->scope = g_strdup(scope);
+void addScopeChunk(Conceito c, gchar* scope_chunk){
+    g_string_append(c->scope, scope_chunk);   
 }
 
 

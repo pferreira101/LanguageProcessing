@@ -31,11 +31,11 @@ Conceito c;
 
 %%
 
-Documento : Metadados '\n''\n' Conceitos		{return 1;}
+Documento : Metadados '\n''\n' Conceitos 		{return 1;}
 	      ;
 
-Metadados : Metadado
-	  	  | Metadados '\n' Metadado
+Metadados : Metadado '\n'
+	  	  | Metadado '\n' Metadados
 	      ;
 
 Metadado : BASELANG PARAM 	    				{printf("YACC - Reconheceu baselang: %s\n",$2); setBaselang(doc,$2);}
@@ -65,7 +65,7 @@ Dado : NT ValoresNT 	              		{if(!checkRelacoes(doc,"NT")) return 0; }
      | BTP ValoresBTP						{if(!checkRelacoes(doc,"BTP")) return 0; }
      | BTG ValoresBTG						{if(!checkRelacoes(doc,"BTG")) return 0; }
      | RT ValoresRT							{;}
-     | SN VAL  								{printf("YACC - reconheceu SN: %s\n",$2); setScope(c,$2);}
+     | SN ChunksTexto  						{;}
      | LANG VAL   							{if(!checkLanguage(doc,$1)) return 0; printf("YACC - reconheceu traducao %s\n",$2); addTraducao(c,$1,$2);}
      ;	
 
@@ -96,6 +96,11 @@ ValoresBTG : VAL 							{addBTG(c,$1);}
 ValoresRT : VAL 							{printf("YACC - adicionou RT na 1 clausula: %s\n",$1); addRelated(c,$1);}
           | VAL ',' ValoresRT				{printf("YACC - adicionou RT na 2 clausula: %s\n",$1); addRelated(c,$1);}
           ;    
+
+ChunksTexto : VAL 							{addScopeChunk(c, $1);}
+			| ChunksTexto VAL				{addScopeChunk(c, $2);}
+			;
+
 
 %%
 #include "lex.yy.c"

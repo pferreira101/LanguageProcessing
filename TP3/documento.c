@@ -105,12 +105,13 @@ gboolean createClausulas(gpointer key_pointer, gpointer conceito_ptr, gpointer t
 }
 
 void docToProlog(Documento doc){
-    FILE* index  = fopen("output.pl", "w");        
+    FILE* index  = fopen("prolog.pl", "w");        
 
     g_hash_table_foreach(doc->conceitos, (GHFunc)createClausulas, index);
 
     fclose(index);
 
+    system("sort -u prolog.pl > output.pl\nrm prolog.pl");
 }
 
 gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer token){
@@ -256,7 +257,7 @@ gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer tok
             // Scope
             if(c->scope != NULL){
                 fprintf(file, "<h4>Scope: </h4> ");
-                fputs(c->scope, file);
+                fputs(c->scope->str, file);
                 fprintf(file, "\n");
             }
 

@@ -3,18 +3,18 @@
 %}
 
 %option yylineno
-%x SCOPENOTE 
+%x SCOPENOTE VALUES
 
 %%
-	
+
 #.+              								{printf("flex - reconheceu comentario\n");}
-^#(.)*\n										{printf("flex - reconheceu comentario de início\n");}
+
 
 "%language" 									{printf("flex - reconheceu languages\n"); return LANGUAGES;}
 "%baselang" 									{printf("flex - reconheceu baselang\n"); return BASELANG;}
 "%inv" 											{printf("flex - reconheceu inv\n"); return INV;}
 
-^"NT" 											{return NT;}
+^"NT" 											{ BEGIN VALUES; return NT;}
 ^"NTP"											{return NTP;}
 ^"NTG"  										{return NTG;}
 ^"BT" 											{return BT;}
@@ -26,12 +26,22 @@
 [A-Z][A-Z]([A-Z])?								{printf("flex - a imprimir duas maiusculas: %s\n", yytext); yylval.param = strdup(yytext); return PARAM;}
 ^([A-Za-z][a-z]+)(\ [A-Za-z][a-z]+)*	    	{printf("flex - reconheceu nome de conceito: %s\n", yytext); yylval.nome = strdup(yytext); return NOME;}
 ([A-Za-z][a-z]+)(\ [A-Za-z][a-z]+)* 			{printf("flex - reconheceu valor: %s\n",yytext); yylval.val = strdup(yytext); return VAL;}
-[,\n]											{return yytext[0];}
+[,\n]											{printf("a retornar \\n %d\n",yylineno);return yytext[0];}
 [\s\t] 											{;}
 
+<VALUES>{
+#.+              								{printf("flex 333- reconheceu comentario\n");}
+,												{return yytext[0];}
+([A-Za-z][a-z]+)(\ [A-Za-z][a-z]+)* 			{printf("flex - reconheceu valor: %s\n",yytext); yylval.val = strdup(yytext); return VAL;}
+\n/[^\t]										{printf("reconheceu istoo\n"); BEGIN INITIAL; return '\n';}	 
+}
+
+
 <SCOPENOTE>{
-[^\n#]+ 										{printf("flex SN - reconheceu valor: %s\n",yytext); yylval.val = strdup(yytext); BEGIN INITIAL; return VAL;}
-#.+											{printf("flex SN - reconheceu comentario\n"); BEGIN INITIAL;}
+[^\n#]+ 										{printf("flex SN - reconheceu valor: %s\n",yytext); yylval.val = strdup(yytext); return VAL;}
+#.+												{printf("flex SN - reconheceu comentario %d\n",yylineno);}
+\n/[^\t]										{printf("reconheceu istoo %d\n",yylineno); BEGIN INITIAL; return '\n';}	
+\n\t 											{;}
 }
 %%
 

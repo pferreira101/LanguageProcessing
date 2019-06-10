@@ -20,13 +20,14 @@ struct conceito {
 	GArray* ntp;
     GArray* btp;
     GArray* relatedConcepts;
-    gchar* scope;
+    GString* scope;
     GHashTable* traducoes;
 };
 
 
 
 Conceito initConceito();
+void addScopeChunk(Conceito c, gchar* scope_chunk);
 void freeStr(void* str);
 void freeConceito(Conceito c);
 void addNT(Conceito c, gchar* narrow);
@@ -38,7 +39,6 @@ void addBTP(Conceito c, gchar* broader);
 void addRelated(Conceito c, gchar* related);
 void addTraducao(Conceito c, gchar* lang, gchar* traducao);
 void setNome(Conceito c, gchar* nome);
-void setScope(Conceito c, gchar* scope);
 
 
 #endif
