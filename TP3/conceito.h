@@ -28,7 +28,6 @@ void addBroader(Conceito c, gchar* broader);
 void addTraducao(Conceito c, gchar* lang, gchar* traducao);
 void setNome(Conceito c, gchar* nome);
 void setLinguagem(Conceito c, gchar* ling);
-void setLinguagem(Conceito c, gchar* ling);
 void setScope(Conceito c, gchar* scope);
 
 
