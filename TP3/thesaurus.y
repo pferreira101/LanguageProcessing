@@ -38,9 +38,9 @@ Metadados : Metadado '\n'
 	  	  | Metadado '\n' Metadados
 	      ;
 
-Metadado : BASELANG PARAM 	    				{printf("YACC - Reconheceu baselang: %s\n",$2); setBaselang(doc,$2);}
-	 	 | LANGUAGES Parametros	    			{printf("YACC -Languages são: %s\n",$2);}
-	 	 | INV PARAM PARAM 	        			{printf("YACC - reconheceu inversa: %s inversa de %s\n",$2,$3); addRelacao(doc,$2); addRelacao(doc,$3);}
+Metadado : BASELANG PARAM 	    				{setBaselang(doc,$2);}
+	 	 | LANGUAGES Parametros	    			{;}
+	 	 | INV PARAM PARAM 	        			{;addRelacao(doc,$2); addRelacao(doc,$3);}
 	 	 ;
 
 Parametros : PARAM 								{ addLanguage(doc,$1);}
@@ -51,54 +51,54 @@ Conceitos : Conceito							{;}
 	  	  | Conceito '\n' Conceitos				{;}
 	  	  ;
 
-Conceito : NOME '\n' Dados              	{printf("YACC - reconheceu conceito: %s\n", $1); setNome(c,$1); addConceito(doc, c); c = initConceito();}
+Conceito : NOME '\n' Dados              		{setNome(c,$1); addConceito(doc, c); c = initConceito();}
 	 	 ;						
 
 Dados : Dado '\n'
       | Dado '\n' Dados
       ;
 
-Dado : NT ValoresNT 	              		{if(!checkRelacoes(doc,"NT")) return 0; }
-	 | NTP ValoresNTP						{if(!checkRelacoes(doc,"NTP")) return 0; }
-	 | NTG ValoresNTG						{if(!checkRelacoes(doc,"NTG")) return 0; }
-     | BT ValoresBT 						{if(!checkRelacoes(doc,"BT")) return 0; }
-     | BTP ValoresBTP						{if(!checkRelacoes(doc,"BTP")) return 0; }
-     | BTG ValoresBTG						{if(!checkRelacoes(doc,"BTG")) return 0; }
-     | RT ValoresRT							{;}
-     | SN ChunksTexto  						{;}
-     | LANG VAL   							{if(!checkLanguage(doc,$1)) return 0; printf("YACC - reconheceu traducao %s\n",$2); addTraducao(c,$1,$2);}
+Dado : NT ValoresNT 	              			{if(!checkRelacoes(doc,"NT")) return 0; }
+	 | NTP ValoresNTP							{if(!checkRelacoes(doc,"NTP")) return 0; }
+	 | NTG ValoresNTG							{if(!checkRelacoes(doc,"NTG")) return 0; }
+     | BT ValoresBT 							{if(!checkRelacoes(doc,"BT")) return 0; }
+     | BTP ValoresBTP							{if(!checkRelacoes(doc,"BTP")) return 0; }
+     | BTG ValoresBTG							{if(!checkRelacoes(doc,"BTG")) return 0; }
+     | RT ValoresRT								{;}
+     | SN ChunksTexto  							{;}
+     | LANG VAL   								{if(!checkLanguage(doc,$1)) return 0; addTraducao(c,$1,$2);}
      ;	
 
-ValoresNT : VAL 							{addNT(c,$1);}
-          | VAL ',' ValoresNT				{addNT(c,$1);}
+ValoresNT : VAL 								{addNT(c,$1);}
+          | VAL ',' ValoresNT					{addNT(c,$1);}
           ;
           
-ValoresNTP : VAL 							{addNTP(c,$1);}
-           | VAL ',' ValoresNTP				{addNTP(c,$1);}
+ValoresNTP : VAL 								{addNTP(c,$1);}
+           | VAL ',' ValoresNTP					{addNTP(c,$1);}
            ;
 
-ValoresNTG : VAL 							{addNTG(c,$1);}
-           | VAL ',' ValoresNTG				{addNTG(c,$1);}
+ValoresNTG : VAL 								{addNTG(c,$1);}
+           | VAL ',' ValoresNTG					{addNTG(c,$1);}
            ;
 
-ValoresBT : VAL 							{addBT(c,$1);}
-          | VAL ',' ValoresBT				{addBT(c,$1);}
+ValoresBT : VAL 								{addBT(c,$1);}
+          | VAL ',' ValoresBT					{addBT(c,$1);}
           ;
 
-ValoresBTP : VAL 							{addBTP(c,$1);}
-           | VAL ',' ValoresBTP				{addBTP(c,$1);}
+ValoresBTP : VAL 								{addBTP(c,$1);}
+           | VAL ',' ValoresBTP					{addBTP(c,$1);}
            ;     
 
-ValoresBTG : VAL 							{addBTG(c,$1);}
-           | VAL ',' ValoresBTG				{addBTG(c,$1);}
+ValoresBTG : VAL 								{addBTG(c,$1);}
+           | VAL ',' ValoresBTG					{addBTG(c,$1);}
            ;                         
 
-ValoresRT : VAL 							{printf("YACC - adicionou RT na 1 clausula: %s\n",$1); addRelated(c,$1);}
-          | VAL ',' ValoresRT				{printf("YACC - adicionou RT na 2 clausula: %s\n",$1); addRelated(c,$1);}
+ValoresRT : VAL 								{addRelated(c,$1);}
+          | VAL ',' ValoresRT					{addRelated(c,$1);}
           ;    
 
-ChunksTexto : VAL 							{addScopeChunk(c, $1);}
-			| ChunksTexto VAL				{addScopeChunk(c, $2);}
+ChunksTexto : VAL 								{addScopeChunk(c, $1);}
+			| ChunksTexto VAL					{addScopeChunk(c, $2);}
 			;
 
 
@@ -141,7 +141,7 @@ int main(int argc, char const *argv[])
 		docToHTML(doc); printf("HTMLs gerados\n");
 		docToDOT(doc); printf("DOCs gerados\n");
 		docToDOTGeral(doc); printf("DOC Geral gerado\n");
-		docToProlog(doc);
+		docToProlog(doc); printf("Ficheiro PROLOG gerado\n");
 	}
 	else printf("Processamento abortado\n");
 

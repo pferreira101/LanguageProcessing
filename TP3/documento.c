@@ -119,7 +119,6 @@ gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer tok
     
     Documento doc = ((Documento*)token)[0];
 
-    printf("a imprimir conceito\n");
     char* html = ".html";
 	gchar* filename = NULL;
 
@@ -493,7 +492,6 @@ gboolean conceptToGraphGeral(gpointer key_pointer, gpointer conceito_ptr, gpoint
 
 
 void addConceito(Documento doc, Conceito c){
-    printf("DOC: a adicionar conceito: %s\n",c->nome );
     g_hash_table_insert(doc->conceitos, c->nome, c);     
 }
 
