@@ -12,8 +12,12 @@ typedef struct conceito* Conceito;
 
 struct conceito {
     gchar* nome;
-    GArray* narrows;
-    GArray* broaders;
+    GArray* nt;
+    GArray* bt;
+	GArray* ntg;
+    GArray* btg;
+	GArray* ntp;
+    GArray* btp;
     GArray* relatedConcepts;
     gchar* scope;
     GHashTable* traducoes;
@@ -24,8 +28,12 @@ struct conceito {
 Conceito initConceito();
 void freeStr(void* str);
 void freeConceito(Conceito c);
-void addNarrow(Conceito c, gchar* narrow);
-void addBroader(Conceito c, gchar* broader);
+void addNT(Conceito c, gchar* narrow);
+void addBT(Conceito c, gchar* broader);
+void addNTG(Conceito c, gchar* narrow);
+void addBTG(Conceito c, gchar* broader);
+void addNTP(Conceito c, gchar* narrow);
+void addBTP(Conceito c, gchar* broader);
 void addRelated(Conceito c, gchar* related);
 void addTraducao(Conceito c, gchar* lang, gchar* traducao);
 void setNome(Conceito c, gchar* nome);

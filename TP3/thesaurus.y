@@ -11,6 +11,7 @@ int checkRelacoes(Documento d, char* rel);
 Documento doc;
 Conceito c;
 
+
 %}
 
 %union{
@@ -30,7 +31,7 @@ Conceito c;
 
 %%
 
-Documento : Metadados '\n''\n' Conceitos		{docToHTML(doc);docToDOT(doc); return 1;}
+Documento : Metadados '\n''\n' Conceitos		{return 1;}
 	      ;
 
 Metadados : Metadado
@@ -68,28 +69,28 @@ Dado : NT ValoresNT 	              		{if(!checkRelacoes(doc,"NT")) return 0; }
      | LANG VAL   							{if(!checkLanguage(doc,$1)) return 0; printf("YACC - reconheceu traducao %s\n",$2); addTraducao(c,$1,$2);}
      ;	
 
-ValoresNT : VAL 							{addNarrow(c,$1);}
-          | VAL ',' ValoresNT				{addNarrow(c,$1);}
+ValoresNT : VAL 							{addNT(c,$1);}
+          | VAL ',' ValoresNT				{addNT(c,$1);}
           ;
           
-ValoresNTP : VAL 							{addNarrow(c,$1);}
-           | VAL ',' ValoresNTP				{addNarrow(c,$1);}
+ValoresNTP : VAL 							{addNTP(c,$1);}
+           | VAL ',' ValoresNTP				{addNTP(c,$1);}
            ;
 
-ValoresNTG : VAL 							{addNarrow(c,$1);}
-           | VAL ',' ValoresNTG				{addNarrow(c,$1);}
+ValoresNTG : VAL 							{addNTG(c,$1);}
+           | VAL ',' ValoresNTG				{addNTG(c,$1);}
            ;
 
-ValoresBT : VAL 							{addBroader(c,$1);}
-          | VAL ',' ValoresBT				{addBroader(c,$1);}
+ValoresBT : VAL 							{addBT(c,$1);}
+          | VAL ',' ValoresBT				{addBT(c,$1);}
           ;
 
-ValoresBTP : VAL 							{addBroader(c,$1);}
-           | VAL ',' ValoresBTP				{addBroader(c,$1);}
+ValoresBTP : VAL 							{addBTP(c,$1);}
+           | VAL ',' ValoresBTP				{addBTP(c,$1);}
            ;     
 
-ValoresBTG : VAL 							{addBroader(c,$1);}
-           | VAL ',' ValoresBTG				{addBroader(c,$1);}
+ValoresBTG : VAL 							{addBTG(c,$1);}
+           | VAL ',' ValoresBTG				{addBTG(c,$1);}
            ;                         
 
 ValoresRT : VAL 							{printf("YACC - adicionou RT na 1 clausula: %s\n",$1); addRelated(c,$1);}
@@ -133,6 +134,9 @@ int main(int argc, char const *argv[])
 	if(ok) printf("Processamento terminado com sucesso. Estrutura preenchida\n");
 	else printf("Processamento abortado\n");
 
+	docToHTML(doc); printf("HTMLs gerados\n");
+	docToDOT(doc); printf("DOCs gerados\n");
+	docToDOTGeral(doc); printf("DOC Geral gerado\n");
 
 	freeDocumento(doc);
 	return 0;

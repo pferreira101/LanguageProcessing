@@ -22,6 +22,8 @@ gboolean printConceito(gpointer key_pointer, gpointer conceito_pointer, gpointer
 void docToHTML(Documento doc);
 gboolean printConceitoGraph(gpointer key_pointer, gpointer conceito_ptr, gpointer doc_ptr);
 void docToDOT(Documento doc);
+gboolean conceptToGraphGeral(gpointer key_pointer, gpointer conceito_ptr, gpointer token);
+void docToDOTGeral(Documento doc);
 void addConceito(Documento doc, Conceito c);
 void setBaselang(Documento doc, gchar* bl);
 void addLanguage(Documento doc, gchar* lang);

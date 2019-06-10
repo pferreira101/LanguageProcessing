@@ -65,12 +65,12 @@ gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer tok
 			fputs(c->nome, file);
 			fprintf(file, "</h1>\n");
 
-			// Narrows
-			if(c->narrows->len > 0){
-				fprintf(file, "<h3>Narrows</h3>\n");
+			// NT
+			if(c->nt->len > 0){
+				fprintf(file, "<h3>Narrower Terms</h3>\n");
 				fprintf(file, "\t<ul>\n");
-				for(int i = 0; i < c->narrows->len; i++){
-                    gchar* nome = g_array_index(c->narrows, gchar*, i);
+				for(int i = 0; i < c->nt->len; i++){
+                    gchar* nome = g_array_index(c->nt, gchar*, i);
                     if(g_hash_table_contains(doc->conceitos, nome)){
 					    fprintf(file, "\t\t<li><a href=\"%s.html\">%s</a> </li>\n", nome, nome);
                     }
@@ -81,12 +81,76 @@ gboolean printConceito(gpointer key_pointer, gpointer conceito_ptr, gpointer tok
 				fprintf(file, "\t</ul>\n");
 			}
 
-            // Broaders
-			if(c->broaders->len > 0){
-				fprintf(file, "<h3>Broaders</h3>\n");
+			// NTG
+			if(c->ntg->len > 0){
+				fprintf(file, "<h3>Narrower Terms Generic</h3>\n");
 				fprintf(file, "\t<ul>\n");
-				for(int i = 0; i < c->broaders->len; i++){
-                    gchar* nome = g_array_index(c->broaders, gchar*, i);
+				for(int i = 0; i < c->ntg->len; i++){
+                    gchar* nome = g_array_index(c->ntg, gchar*, i);
+                    if(g_hash_table_contains(doc->conceitos, nome)){
+					    fprintf(file, "\t\t<li><a href=\"%s.html\">%s</a> </li>\n", nome, nome);
+                    }
+                    else{
+                        fprintf(file, "\t\t<li>%s</li>\n", nome);   
+                    }
+				}
+				fprintf(file, "\t</ul>\n");
+			}
+
+			// NTP
+			if(c->ntp->len > 0){
+				fprintf(file, "<h3>Narrower Terms Partitive</h3>\n");
+				fprintf(file, "\t<ul>\n");
+				for(int i = 0; i < c->ntp->len; i++){
+                    gchar* nome = g_array_index(c->ntp, gchar*, i);
+                    if(g_hash_table_contains(doc->conceitos, nome)){
+					    fprintf(file, "\t\t<li><a href=\"%s.html\">%s</a> </li>\n", nome, nome);
+                    }
+                    else{
+                        fprintf(file, "\t\t<li>%s</li>\n", nome);   
+                    }
+				}
+				fprintf(file, "\t</ul>\n");
+			}
+
+            // BT
+			if(c->bt->len > 0){
+				fprintf(file, "<h3>Broader Terms</h3>\n");
+				fprintf(file, "\t<ul>\n");
+				for(int i = 0; i < c->bt->len; i++){
+                    gchar* nome = g_array_index(c->bt, gchar*, i);
+                    if(g_hash_table_contains(doc->conceitos, nome)){
+					    fprintf(file, "\t\t<li><a href=\"%s.html\">%s</a> </li>\n", nome, nome);
+                    }
+                    else{
+                        fprintf(file, "\t\t<li>%s</li>\n", nome);   
+                    }
+				}
+				fprintf(file, "\t</ul>\n");
+			}
+
+			// BTG
+			if(c->btg->len > 0){
+				fprintf(file, "<h3>Broader Terms Generic</h3>\n");
+				fprintf(file, "\t<ul>\n");
+				for(int i = 0; i < c->btg->len; i++){
+                    gchar* nome = g_array_index(c->btg, gchar*, i);
+                    if(g_hash_table_contains(doc->conceitos, nome)){
+					    fprintf(file, "\t\t<li><a href=\"%s.html\">%s</a> </li>\n", nome, nome);
+                    }
+                    else{
+                        fprintf(file, "\t\t<li>%s</li>\n", nome);   
+                    }
+				}
+				fprintf(file, "\t</ul>\n");
+			}
+
+			// BTP
+			if(c->btp->len > 0){
+				fprintf(file, "<h3>Broader Terms Partitive</h3>\n");
+				fprintf(file, "\t<ul>\n");
+				for(int i = 0; i < c->btp->len; i++){
+                    gchar* nome = g_array_index(c->btp, gchar*, i);
                     if(g_hash_table_contains(doc->conceitos, nome)){
 					    fprintf(file, "\t\t<li><a href=\"%s.html\">%s</a> </li>\n", nome, nome);
                     }
@@ -192,24 +256,66 @@ gboolean printConceitoGraph(gpointer key_pointer, gpointer conceito_ptr, gpointe
             }
 
             // NOME --> NT --> termos
-			if(c->narrows->len > 0) {
-                fprintf(file, "\t\"%s\" -- \"Narrow Terms\";\n", c->nome);
+			if(c->nt->len > 0) {
+                fprintf(file, "\t\"%s\" -- \"Narrower Terms\";\n", c->nome);
 
-                for(int i = 0; i < c->narrows->len; i++){
-                    gchar* nome = g_array_index(c->narrows, gchar*, i);
+                for(int i = 0; i < c->nt->len; i++){
+                    gchar* nome = g_array_index(c->nt, gchar*, i);
                     
-                    fprintf(file, "\t\"Narrow Terms\" -- \"%s\";\n", nome);
+                    fprintf(file, "\t\"Narrower Terms\" -- \"%s\";\n", nome);
+                }
+            }
+			// NOME --> NTG --> termos
+			if(c->ntg->len > 0) {
+                fprintf(file, "\t\"%s\" -- \"Narrower Terms General\";\n", c->nome);
+
+                for(int i = 0; i < c->ntg->len; i++){
+                    gchar* nome = g_array_index(c->ntg, gchar*, i);
+                    
+                    fprintf(file, "\t\"Narrower Terms General\" -- \"%s\";\n", nome);
+                }
+            }
+			// NOME --> NTP --> termos
+			if(c->ntp->len > 0) {
+                fprintf(file, "\t\"%s\" -- \"Narrower Terms Partitive\";\n", c->nome);
+
+                for(int i = 0; i < c->ntp->len; i++){
+                    gchar* nome = g_array_index(c->ntp, gchar*, i);
+                    
+                    fprintf(file, "\t\"Narrower Terms Partitive\" -- \"%s\";\n", nome);
                 }
             }
 
             // NOME --> BT --> termos
-			if(c->broaders->len > 0) {
+			if(c->bt->len > 0) {
                 fprintf(file, "\t\"%s\" -- \"Broader Terms\";\n", c->nome);
 
-                for(int i = 0; i < c->broaders->len; i++){
-                    gchar* nome = g_array_index(c->broaders, gchar*, i);
+                for(int i = 0; i < c->bt->len; i++){
+                    gchar* nome = g_array_index(c->bt, gchar*, i);
                     
                     fprintf(file, "\t\"Broader Terms\" -- \"%s\";\n", nome);
+                }
+            }
+
+			// NOME --> BTG --> termos
+			if(c->btg->len > 0) {
+                fprintf(file, "\t\"%s\" -- \"Broader Terms Generic\";\n", c->nome);
+
+                for(int i = 0; i < c->btg->len; i++){
+                    gchar* nome = g_array_index(c->btg, gchar*, i);
+                    
+                    fprintf(file, "\t\"Broader Terms Generic\" -- \"%s\";\n", nome);
+                }
+            }
+
+			// NOME --> BTP --> termos
+			if(c->btp->len > 0) {
+                fprintf(file, "\t\"%s\" -- \"Broader Terms Partitive\";\n", c->nome);
+
+                for(int i = 0; i < c->btp->len; i++){
+                    gchar* nome = g_array_index(c->btp, gchar*, i);
+                    
+                    fprintf(file, "\t\"Broader Terms Partitive\" -- \"%s\";\n", nome);
                 }
             }
 
@@ -226,6 +332,75 @@ gboolean printConceitoGraph(gpointer key_pointer, gpointer conceito_ptr, gpointe
 
 void docToDOT(Documento doc){
     g_hash_table_foreach(doc->conceitos, (GHFunc)printConceitoGraph, NULL);
+}
+
+void docToDOTGeral(Documento doc){
+	FILE* file = fopen("geral.dot","w");
+	if(file) {
+		fprintf(file,"digraph { rankdir=\"LR\"; \n");
+
+		void* token[1] = {file};
+    	g_hash_table_foreach(doc->conceitos, (GHFunc)conceptToGraphGeral, token);
+		
+		fprintf(file, "}");
+		fclose(file);
+	}
+}
+
+gboolean conceptToGraphGeral(gpointer key_pointer, gpointer conceito_ptr, gpointer token){
+    Conceito c = (Conceito)conceito_ptr;
+
+	FILE* file = ((FILE**)token)[0];
+
+	// NT e NTG
+	if(c->nt->len > 0) {
+    	for(int i = 0; i < c->nt->len; i++){
+			gchar* nome = g_array_index(c->nt, gchar*, i);        
+           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"is a\"];\n", nome,c->nome);
+        }
+    }
+	if(c->ntg->len > 0) {
+    	for(int i = 0; i < c->ntg->len; i++){
+			gchar* nome = g_array_index(c->ntg, gchar*, i);        
+           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"is a\"];\n", nome,c->nome);
+        }
+    }
+	// NTP
+	if(c->ntp->len > 0) {
+    	for(int i = 0; i < c->ntp->len; i++){
+			gchar* nome = g_array_index(c->ntp, gchar*, i);        
+           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"is part of\"];\n", nome,c->nome);
+        }
+    }
+	// BT e BTG
+	if(c->bt->len > 0) {
+    	for(int i = 0; i < c->bt->len; i++){
+			gchar* nome = g_array_index(c->bt, gchar*, i);        
+           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"is a\"];\n", c->nome,nome);
+        }
+    }
+	if(c->btg->len > 0) {
+    	for(int i = 0; i < c->btg->len; i++){
+			gchar* nome = g_array_index(c->btg, gchar*, i);        
+           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"is a\"];\n", c->nome,nome);
+        }
+    }
+	// BTP
+	if(c->btp->len > 0) {
+    	for(int i = 0; i < c->btp->len; i++){
+			gchar* nome = g_array_index(c->btp, gchar*, i);        
+           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"is part of\"];\n", c->nome,nome);
+        }
+    }
+
+	// RT
+	if(c->relatedConcepts->len > 0) {
+    	for(int i = 0; i < c->relatedConcepts->len; i++){
+			gchar* nome = g_array_index(c->relatedConcepts, gchar*, i);        
+           	fprintf(file, "\t\"%s\" -> \"%s\" [label=\"related to\"];\n", c->nome,nome);
+        }
+    }
+
 }
 
 
